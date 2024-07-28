@@ -31,8 +31,6 @@ import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Connection;
@@ -74,22 +72,33 @@ import java.util.concurrent.Executor;
  *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
-public class SimpleConnection implements Connection {
+public class InfluxConnection implements Connection {
     /**
      * The connection which should be used to interact with the database
      */
     private final  Connection connection;
 
-    public static SimpleConnection connect(String url, String user, String password) throws SQLException {
-        return new SimpleConnection(DriverManager.getConnection(url, user, password));
+    /**
+     * The value of this variable should be true between calls to being and
+     * commit/rollback and false otherwise. It is not exposed outside of this
+     * class because, if you are writing your code correctly, then you should
+     * ALWAYS know if you are within a transaction or not. If you know that,
+     * then you do not need access to this value. If you don't know
+     * that, then there is a serious problem with your application which needs
+     * to be corrected. In either case,
+     */
+    private boolean transactionActive = false;
+
+    public static InfluxConnection connect(String url, String user, String password) throws SQLException {
+        return new InfluxConnection(DriverManager.getConnection(url, user, password));
     }
 
-    public static SimpleConnection connect(String url) throws SQLException {
-        return new SimpleConnection(DriverManager.getConnection(url));
+    public static InfluxConnection connect(String url) throws SQLException {
+        return new InfluxConnection(DriverManager.getConnection(url));
     }
 
-    public static SimpleConnection connect(String url, Properties info) throws SQLException {
-        return new SimpleConnection(DriverManager.getConnection(url, info));
+    public static InfluxConnection connect(String url, Properties info) throws SQLException {
+        return new InfluxConnection(DriverManager.getConnection(url, info));
     }
 
     /**
@@ -98,7 +107,7 @@ public class SimpleConnection implements Connection {
      * @param dataSource the datasource which should be used to obtain a database connection
      * @throws SQLException throw when something exceptional happens
      */
-    public SimpleConnection(final DataSource dataSource) throws SQLException {
+    public InfluxConnection(final DataSource dataSource) throws SQLException {
         this.connection = dataSource.getConnection();
     }
 
@@ -106,7 +115,7 @@ public class SimpleConnection implements Connection {
      * Construct an instance of this class with the provided {@link java.sql.Connection} object
      * @param connection the connection object which should be used to access the database
      */
-    public SimpleConnection(final Connection connection) {
+    public InfluxConnection(final Connection connection) {
         this.connection = connection;
     }
 
@@ -123,23 +132,23 @@ public class SimpleConnection implements Connection {
 
     /**
      * This must be implemented by a child class so that the child class can control which child class of
-     * {@link SimpleResultSet} is returned
+     * {@link InfluxResultSet} is returned
      * @param statement the statement which should be used to obtain the resultset
      * @return reference to the resultset
      * @throws SQLException thrown when something exceptional happens
      */
-    protected SimpleResultSet fetch(final PreparedStatement statement) throws SQLException {
-        return new SimpleResultSet(statement.executeQuery());
+    protected InfluxResultSet fetch(final PreparedStatement statement) throws SQLException {
+        return new InfluxResultSet(statement.executeQuery());
     }
 
     /**
-     * Fetches a {@link SimpleResultSet} from the provided sql and arguments.
+     * Fetches a {@link InfluxResultSet} from the provided sql and arguments.
      * @param sql the sql query which should be executed
      * @param arguments the arguments which should be bound to the query
-     * @return a reference to an instance of {@link SimpleResultSet} which contains the results of the query
+     * @return a reference to an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
-    public SimpleResultSet fetch(final String sql, final Object... arguments) throws SQLException {
+    public InfluxResultSet fetch(final String sql, final Object... arguments) throws SQLException {
         try(PreparedStatement statement = prepareStatement(sql)) {
             return fetch(statement, arguments);
         }
@@ -147,13 +156,13 @@ public class SimpleConnection implements Connection {
 
     /**
      * Bind the provided arguments to the provided statement, execute the statement, and return an instance of
-     * {@link SimpleResultSet}
+     * {@link InfluxResultSet}
      * @param statement the statement which should be executed
      * @param arguments the arguments which should be bound to the query
-     * @return an instance of {@link SimpleResultSet} which contains the results of the query
+     * @return an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
-    public SimpleResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public InfluxResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -168,7 +177,7 @@ public class SimpleConnection implements Connection {
     }
 
     public <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object ... arguments) throws SQLException {
-        try (SimpleResultSet resultSet = fetch(statement, arguments)) {
+        try (InfluxResultSet resultSet = fetch(statement, arguments)) {
             // Return null if there is no data
             if (!resultSet.next()) {
                 return null;
@@ -185,12 +194,12 @@ public class SimpleConnection implements Connection {
     }
 
     public List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments) throws SQLException {
-        List<Integer> list = fetch(simpleResultSet -> {
+        List<Integer> list = fetch(resultSet -> {
             List<Integer> integerList = new ArrayList<>();
 
             do {
-                integerList.add(simpleResultSet.getInt(1));
-            } while (simpleResultSet.next());
+                integerList.add(resultSet.getInt(1));
+            } while (resultSet.next());
 
             return integerList;
         }, statement, arguments);
@@ -211,12 +220,12 @@ public class SimpleConnection implements Connection {
     }
 
     public List<Long> fetchListLong(final PreparedStatement statement, final Object... arguments) throws SQLException {
-        List<Long> list = fetch(simpleResultSet -> {
+        List<Long> list = fetch(resultSet -> {
             List<Long> integerList = new ArrayList<>();
 
             do {
-                integerList.add(simpleResultSet.getLong(1));
-            } while (simpleResultSet.next());
+                integerList.add(resultSet.getLong(1));
+            } while (resultSet.next());
 
             return integerList;
         }, statement, arguments);
@@ -287,12 +296,12 @@ public class SimpleConnection implements Connection {
         bindArguments(statement, arguments);
 
         // Run the query
-        try (SimpleResultSet simpleResultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = fetch(statement)) {
             List<T> entities = new ArrayList<>();
 
             // Iterate over the results
-            while (simpleResultSet.next()) {
-                entities.add(fetchEntity(clazz, simpleResultSet));
+            while (resultSet.next()) {
+                entities.add(resultSet.fetchEntity(clazz));
             }
 
             return entities;
@@ -310,61 +319,15 @@ public class SimpleConnection implements Connection {
         bindArguments(statement, arguments);
 
         // Run the query
-        try (SimpleResultSet simpleResultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = fetch(statement)) {
             Map<String, T> entities = new HashMap<>();
 
             // Iterate over the results
-            while (simpleResultSet.next()) {
-                entities.put(simpleResultSet.getStringByName(columnLabel), fetchEntity(clazz, simpleResultSet));
+            while (resultSet.next()) {
+                entities.put(resultSet.getStringByName(columnLabel), resultSet.fetchEntity(clazz));
             }
 
             return entities;
-        }
-    }
-
-    protected <T> T fetchEntity(final Class<T> clazz, final SimpleResultSet simpleResultSet) throws SQLException {
-        try {
-
-            T entity = clazz.getDeclaredConstructor().newInstance();
-            return fetchEntity(entity, simpleResultSet);
-        } catch (InstantiationException e) {
-            throw new SQLException("Cannot instantiate entity: " + clazz.getCanonicalName(), e);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new SQLException("Failed to invoke no-argument constructor of entity: " + clazz.getCanonicalName(), e);
-        } catch (NoSuchMethodException e) {
-            throw new SQLException("Entity does not have a no-argument constructor: " + clazz.getCanonicalName(), e);
-        }
-    }
-
-    protected <T> T fetchEntity(final T entity, final SimpleResultSet simpleResultSet) throws SQLException {
-        try {
-            int columnCount = simpleResultSet.getColumnCount();
-
-            for (int index = 1; index <= columnCount; index++) {
-                String columnName = toCamelCase(simpleResultSet.getColumnName(index));
-                String columnClassName = simpleResultSet.getColumnClassName(index);
-                Object value = simpleResultSet.getValue(index);
-
-                // Attempt to find the appropriate setter method
-                SetterMethod setterMethod = findSetter(entity, columnName, columnClassName);
-
-                Class<?> argumentType = setterMethod.getArgumentType();
-
-                // Perform automatic type conversions, where possible
-                if (argumentType.equals(Long.class) && value instanceof Integer) {
-                    value = Long.valueOf((Integer)value);
-                }
-                if (argumentType.equals(Date.class) && value instanceof java.sql.Timestamp) {
-                    value = new Date(((java.sql.Timestamp) value).getTime());
-                }
-
-                // Invoke the setter
-                setterMethod.invoke(entity, value);
-            }
-
-            return entity;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
-            throw new SQLException("Cannot invoke setter: ", e);
         }
     }
 
@@ -379,12 +342,12 @@ public class SimpleConnection implements Connection {
         bindArguments(statement, arguments);
 
         // Run the query
-        try (SimpleResultSet simpleResultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = fetch(statement)) {
             List<Map<String, Object>> entities = new ArrayList<>();
 
             // Iterate over the results
-            while(simpleResultSet.next()) {
-                entities.add(fetchMap(simpleResultSet));
+            while(resultSet.next()) {
+                entities.add(fetchMap(resultSet));
             }
 
             // Not technically type safe but necessary to create the illusion of it
@@ -403,17 +366,17 @@ public class SimpleConnection implements Connection {
         bindArguments(statement, arguments);
 
         // Run the query
-        try (SimpleResultSet simpleResultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = fetch(statement)) {
             int count = 0;
 
             // Iterate over the results
-            while(simpleResultSet.next()) {
+            while(resultSet.next()) {
                 if (count > 0) {
                     throw new SQLException("Encountered a second record where a single record was expected");
                 }
 
                 // Populate the entity
-                fetchEntity(entity, simpleResultSet);
+                resultSet.fetchEntity(entity);
                 count++;
             }
 
@@ -445,18 +408,18 @@ public class SimpleConnection implements Connection {
         bindArguments(statement, arguments);
 
         // Run the query
-        try (SimpleResultSet simpleResultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = fetch(statement)) {
             int count = 0;
 
             Map<String, Object> entity = null;
 
             // Iterate over the results
-            while (simpleResultSet.next()) {
+            while (resultSet.next()) {
                 if (count > 0) {
                     throw new SQLException("Encountered a second record where a single record was expected");
                 }
 
-                entity = fetchMap(simpleResultSet);
+                entity = fetchMap(resultSet);
                 count++;
             }
 
@@ -464,14 +427,14 @@ public class SimpleConnection implements Connection {
         }
     }
 
-    protected Map<String, Object> fetchMap(final SimpleResultSet simpleResultSet) throws SQLException {
+    protected Map<String, Object> fetchMap(final InfluxResultSet resultSet) throws SQLException {
         Map<String, Object> entity = new HashMap<>();
 
-        int columnCount = simpleResultSet.getColumnCount();
+        int columnCount = resultSet.getColumnCount();
 
         for (int index = 1; index <= columnCount; index++) {
-            String columnName = simpleResultSet.getColumnName(index).toLowerCase();
-            Object value = simpleResultSet.getValue(index);
+            String columnName = resultSet.getColumnName(index).toLowerCase();
+            Object value = resultSet.getValue(index);
             entity.put(columnName, value);
         }
 
@@ -486,7 +449,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public String fetchString(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getString(1), sql, args);
+        return fetch(resultSet -> resultSet.getString(1), sql, args);
     }
 
     /**
@@ -497,7 +460,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Integer fetchInt(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getInt(1), sql, args);
+        return fetch(resultSet -> resultSet.getInt(1), sql, args);
     }
 
     /**
@@ -508,7 +471,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Short fetchShort(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getShort(1), sql, args);
+        return fetch(resultSet -> resultSet.getShort(1), sql, args);
     }
 
     /**
@@ -519,7 +482,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Byte fetchByte(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getByte(1), sql, args);
+        return fetch(resultSet -> resultSet.getByte(1), sql, args);
     }
 
     /**
@@ -530,7 +493,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Timestamp fetchTimestamp(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getTimestamp(1), sql, args);
+        return fetch(resultSet -> resultSet.getTimestamp(1), sql, args);
     }
 
     /**
@@ -541,7 +504,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Time fetchTime(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getTime(1), sql, args);
+        return fetch(resultSet -> resultSet.getTime(1), sql, args);
     }
 
     /**
@@ -552,7 +515,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public URL fetchURL(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getURL(1), sql, args);
+        return fetch(resultSet -> resultSet.getURL(1), sql, args);
     }
 
     /**
@@ -563,7 +526,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Array fetchArray(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getArray(1), sql, args);
+        return fetch(resultSet -> resultSet.getArray(1), sql, args);
     }
 
     /**
@@ -574,7 +537,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public InputStream fetchAsciiStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getAsciiStream(1), sql, args);
+        return fetch(resultSet -> resultSet.getAsciiStream(1), sql, args);
     }
 
     /**
@@ -585,7 +548,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public InputStream fetchBinaryStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getBinaryStream(1), sql, args);
+        return fetch(resultSet -> resultSet.getBinaryStream(1), sql, args);
     }
 
     /**
@@ -596,7 +559,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Blob fetchBlob(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getBlob(1), sql, args);
+        return fetch(resultSet -> resultSet.getBlob(1), sql, args);
     }
 
     /**
@@ -607,7 +570,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Reader fetchCharacterStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getCharacterStream(1), sql, args);
+        return fetch(resultSet -> resultSet.getCharacterStream(1), sql, args);
     }
 
     /**
@@ -618,7 +581,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Reader fetchNCharacterStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getNCharacterStream(1), sql, args);
+        return fetch(resultSet -> resultSet.getNCharacterStream(1), sql, args);
     }
 
     /**
@@ -629,7 +592,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Clob fetchClob(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getClob(1), sql, args);
+        return fetch(resultSet -> resultSet.getClob(1), sql, args);
     }
 
     /**
@@ -640,7 +603,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public NClob fetchNClob(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getNClob(1), sql, args);
+        return fetch(resultSet -> resultSet.getNClob(1), sql, args);
     }
 
     /**
@@ -651,7 +614,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Ref fetchRef(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getRef(1), sql, args);
+        return fetch(resultSet -> resultSet.getRef(1), sql, args);
     }
 
     /**
@@ -662,7 +625,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public String fetchNString(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getNString(1), sql, args);
+        return fetch(resultSet -> resultSet.getNString(1), sql, args);
     }
 
     /**
@@ -673,7 +636,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public SQLXML fetchSQLXML(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getSQLXML(1), sql, args);
+        return fetch(resultSet -> resultSet.getSQLXML(1), sql, args);
     }
 
     /**
@@ -684,7 +647,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public byte[] fetchBytes(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getBytes(1), sql, args);
+        return fetch(resultSet -> resultSet.getBytes(1), sql, args);
     }
 
     /**
@@ -695,7 +658,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Long fetchLong(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getLong(1), sql, args);
+        return fetch(resultSet -> resultSet.getLong(1), sql, args);
     }
 
     /**
@@ -706,7 +669,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Float fetchFloat(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getFloat(1), sql, args);
+        return fetch(resultSet -> resultSet.getFloat(1), sql, args);
     }
 
     /**
@@ -717,7 +680,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Double fetchDouble(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getDouble(1), sql, args);
+        return fetch(resultSet -> resultSet.getDouble(1), sql, args);
     }
 
     /**
@@ -728,7 +691,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public BigDecimal fetchBigDecimal(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getBigDecimal(1), sql, args);
+        return fetch(resultSet -> resultSet.getBigDecimal(1), sql, args);
     }
 
     /**
@@ -739,7 +702,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Date fetchDate(final String sql, final Object ... args) throws SQLException {
-        return fetch((ResultSetHandler<Date>) simpleResultSet -> simpleResultSet.getDate(1), sql, args);
+        return fetch((ResultSetHandler<Date>) resultSet -> resultSet.getDate(1), sql, args);
     }
 
     /**
@@ -750,7 +713,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Boolean fetchBoolean(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getBoolean(1), sql, args);
+        return fetch(resultSet -> resultSet.getBoolean(1), sql, args);
     }
 
     /**
@@ -762,7 +725,7 @@ public class SimpleConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Object fetchObject(final String sql, final Object ... args) throws SQLException {
-        return fetch(simpleResultSet -> simpleResultSet.getObject(1), sql, args);
+        return fetch(resultSet -> resultSet.getObject(1), sql, args);
     }
 
     /**
@@ -844,65 +807,6 @@ public class SimpleConnection implements Connection {
     }
 
     /**
-     * This method attempts to locate the appropriate setter method within the specified object based
-     * on the column name and data type which was returned by the database.
-     * @param entity The entity in which we are looking for a setter method
-     * @param columnName the column name of the data for which we are trying to find a setter method
-     * @param columnTypeName the name of the data type which was returned by the database
-     * @return An instance of @{link org.voidzero.influx.jdbc.SetterMethod()} or null if a setter cannot be found
-     * @throws ClassNotFoundException thrown when something exceptional happens
-     * @throws NoSuchMethodException thrown when something exceptional happens
-     * @throws SQLException thrown when something exceptional happens
-     */
-    protected SetterMethod findSetter(final Object entity, final String columnName, final String columnTypeName) throws ClassNotFoundException, NoSuchMethodException, SQLException {
-        Class<?> columnClass = Class.forName(columnTypeName);
-        Class<?> entityClass = entity.getClass();
-
-        // Attempt to find a setter name for the property
-        String setterName = "set"
-            + String.valueOf(columnName.charAt(0)).toUpperCase()
-            + columnName.substring(1);
-
-        Method setterMethod;
-
-        try {
-            setterMethod = entityClass.getMethod(setterName, columnClass);
-        } catch (NoSuchMethodException e) {
-            // Attempt some type conversions, where possible
-            if (columnTypeName.equals("java.lang.Integer")) {
-                return findSetter(entity, columnName, "java.lang.Long");
-            } else if (columnTypeName.equals("java.sql.Timestamp")) {
-                return findSetter(entity, columnName, "java.util.Date");
-            } else {
-                throw e;
-            }
-        }
-
-        Type[] parameterTypes = setterMethod.getParameterTypes();
-
-        if (parameterTypes.length != 1) {
-            throw new SQLException("Setter methods should only accept a single parameter");
-        }
-
-        Type setterArgumentType = parameterTypes[0];
-
-        // TODO: This probably isn't very portable
-        String setterArgumentTypeName = setterArgumentType.toString().replaceAll("class ", "");
-
-        if (!setterArgumentTypeName.equals(columnTypeName)) {
-            throw new SQLException("Setter argument type("
-                + setterArgumentTypeName
-                + ") does not match the column type name("
-                + columnTypeName
-                + ")"
-            );
-        }
-
-        // Return the setter
-        return new SetterMethod(setterMethod);
-    }
-
-    /**
      * This method converts underscore delimited column names to camel case so that they can
      * be used to locate the appropriate setter method in the target entity. For example, the
      * column name my_column_name would become myColumnName.
@@ -910,7 +814,7 @@ public class SimpleConnection implements Connection {
      * @return camel case equivalent of the underscore separated input value
      * @throws SQLException thrown then something exceptional happens
      */
-    protected String toCamelCase(final String columnName) throws SQLException {
+    public static String toCamelCase(final String columnName) throws SQLException {
         String c = columnName.toLowerCase();
 
         // Leading underscores are not supported
@@ -946,17 +850,56 @@ public class SimpleConnection implements Connection {
     }
 
     /**
+     *
+     * @throws SQLException throw when something exceptional happens
+     */
+    public void begin() throws SQLException {
+        // Throw an error if we attempt to being a transaction without committing or
+        // rolling back the previous transaction
+        if (transactionActive) {
+            throw new SQLException("Cannot begin a new transaction because one is already active");
+        }
+
+        // Enable auto-commit. There is no "begin" method in the JDBC API for starting new transactions. Once you
+        // set this boolean, then a new transaction will being with the execution of your next statement
+        connection.setAutoCommit(false);
+
+        // This only happens if the previous method call succeeds
+        transactionActive = true;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public void commit() throws SQLException {
-        this.connection.commit();
+        // Throw an error if we attempt to commit back a transaction without calling begin first
+        if (!transactionActive) {
+            throw new SQLException("Attempted to roll back a transaction when no transaction was active.");
+        }
+
+        // Attempt to commit the transaction
+        connection.commit();
+        connection.setAutoCommit(true);
+
+        // This only happens if the previous method calls succeed
+        transactionActive = false;
     }
 
     /**
      * {@inheritDoc}
      */
     public void rollback() throws SQLException {
-        this.connection.rollback();
+        // Throw an error if we attempt to roll back a transaction without calling begin first
+        if (!transactionActive) {
+            throw new SQLException("Attempted to roll back a transaction when no transaction was active.");
+        }
+
+        // Attempt to roll back the transaction
+        connection.rollback();
+        connection.setAutoCommit(true);
+
+        // This only happens if the previous method calls succeed
+        transactionActive = false;
     }
 
     /**
@@ -1323,7 +1266,6 @@ public class SimpleConnection implements Connection {
         return this.connection.isWrapperFor(iface);
     }
 
-/*
     public QueryBuilder query(final String sql) throws SQLException {
         return new QueryBuilder(this, sql);
     }
@@ -1332,7 +1274,7 @@ public class SimpleConnection implements Connection {
         private final PreparedStatement preparedStatement;
         private int position = 1;
 
-        private QueryBuilder(final SimpleConnection connection, final String sql) throws SQLException {
+        private QueryBuilder(final InfluxConnection connection, final String sql) throws SQLException {
             this.preparedStatement = connection.prepareStatement(sql);
         }
 
@@ -1341,11 +1283,66 @@ public class SimpleConnection implements Connection {
             return this;
         }
 
-        public SimpleResultSet fetch() throws SQLException {
-            return new SimpleResultSet(preparedStatement.executeQuery());
+        public InfluxResultSet fetch() throws SQLException {
+            return new InfluxResultSet(preparedStatement.executeQuery());
         }
-*/
 
+        public <T> T fetchEntity(Class<T> clazz) throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                if (!resultSet.next()) {
+                    return null;
+                }
+                return resultSet.fetchEntity(clazz);
+            }
+        }
+
+        // TODO
+        public <T> List<T> fetchList(Class<T> clazz) {
+            throw new RuntimeException("IMPLEMENT ME");
+        }
+
+        public String fetchString() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getString(1);
+            }
+        }
+
+        public Integer toInteger() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getInt(1);
+            }
+        }
+
+        public Short toShort() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getShort(1);
+            }
+        }
+
+        public Byte fetchByte() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getByte(1);
+            }
+        }
+
+        public Timestamp fetchTimestamp() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getTimestamp(1);
+            }
+        }
+
+        public Time fetchTime() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getTime(1);
+            }
+        }
+
+        public URL fetchURL() throws SQLException {
+            try (InfluxResultSet resultSet = fetch()) {
+                return resultSet.getURL(1);
+            }
+        }
+    }
 /*
         SimpleResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException;
 
@@ -1434,6 +1431,5 @@ public class SimpleConnection implements Connection {
         Boolean fetchBoolean(final String sql, final Object... args) throws SQLException;
 
         Object fetchObject(final String sql, final Object... args) throws SQLException;
-    }
 */
 }

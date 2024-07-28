@@ -33,5 +33,5 @@ import java.sql.SQLException;
  */
 @FunctionalInterface
 public interface ResultSetHandler<T> {
-    T handle(final SimpleResultSet simpleResultSet) throws SQLException;
+    T handle(final InfluxResultSet influxResultSet) throws SQLException;
 }

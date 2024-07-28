@@ -39,9 +39,7 @@ import static org.junit.Assert.assertNotEquals;
 /**
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
-public class AbstractJdbcDaoTest extends AbstractUnitTest {
-    protected static SimpleUserJdbcDao jdbcDao = new SimpleUserJdbcDao(connection);
-
+public class TransactionTest extends AbstractUnitTest {
     @Test
     public void testTransactionRollbackOnException() throws SQLException {
         String oldPassword = "";
@@ -55,30 +53,30 @@ public class AbstractJdbcDaoTest extends AbstractUnitTest {
         }
 
         try {
-            jdbcDao.begin();
+            connection.begin();
 
             // Make sure that we start in a known state
-            jdbcDao.updatePasswordByUsername("admin", oldPassword);
+            updatePasswordByUsername("admin", oldPassword, connection);
 
             // Re-Load the old password
-            tmp = jdbcDao.getPasswordByUsername("admin");
+            tmp = getPasswordByUsername("admin", connection);
 
             // Make sure that the password was actually set
             assertEquals(oldPassword, tmp);
 
             // Attempt to change the password again
-            jdbcDao.updatePasswordByUsername("admin", newPassword);
+            updatePasswordByUsername("admin", newPassword, connection);
 
             if (new Random().nextInt() - 1 != Integer.MAX_VALUE) {
                 throw new SQLException("this should always be thrown");
             }
 
-            jdbcDao.commit();
+            connection.commit();
         } catch(SQLException e) {
-            jdbcDao.rollback();
+            connection.rollback();
         }
 
-        String currentPassword = jdbcDao.getPasswordByUsername("admin");
+        String currentPassword = getPasswordByUsername("admin", connection);
 
         // Make sure that the new password was never persisted
         assertNotEquals(newPassword, currentPassword);
@@ -96,62 +94,49 @@ public class AbstractJdbcDaoTest extends AbstractUnitTest {
         }
 
         try {
-            jdbcDao.begin();
+            connection.begin();
 
             // Make sure that we start in a known state
-            jdbcDao.updatePasswordByUsername("admin", oldPassword);
+            updatePasswordByUsername("admin", oldPassword, connection);
 
             // Re-Load the old password
-            String tmp = jdbcDao.getPasswordByUsername("admin");
+            String tmp = getPasswordByUsername("admin", connection);
 
             // Make sure that the password was actually set
             assertEquals(oldPassword, tmp);
 
             // Attempt to change the password again
-            jdbcDao.updatePasswordByUsername("admin", newPassword);
+            updatePasswordByUsername("admin", newPassword, connection);
 
-            jdbcDao.commit();
+            connection.commit();
         } catch(SQLException e) {
-            jdbcDao.rollback();
+            connection.rollback();
             throw e;
         }
 
         // Make sure that the new password was persisted
         assertEquals(
             newPassword,
-            jdbcDao.getPasswordByUsername("admin")
+            getPasswordByUsername("admin", connection)
         );
     }
 
-    public static class SimpleUserJdbcDao extends AbstractJdbcDao {
-        /**
-         * Constructor for this object which accepts a reference to the database
-         * connection which should be used to interact with the database.
-         *
-         * @param connection reference to the database
-         *                   connection which should be used to interact with the database
-         */
-        public SimpleUserJdbcDao(final SimpleConnection connection) {
-            super(connection);
-        }
-
-        public String getPasswordByUsername(final String username) throws SQLException {
-            return connection.fetchString(
+    public static String getPasswordByUsername(final String username, final InfluxConnection connection) throws SQLException {
+        return connection.fetchString(
                 "select password from users where username = ?",
                 username
-            );
-        }
+        );
+    }
 
-        public String updatePasswordByUsername(final String username, final String password) throws SQLException {
-            connection.execute(
+    public static String updatePasswordByUsername(final String username, final String password, final InfluxConnection connection) throws SQLException {
+        connection.execute(
                 "update users set password = ? where username = ?",
                 password,
                 username
-            );
-            return connection.fetchString(
+        );
+        return connection.fetchString(
                 "select password from users where username = ?",
                 username
-            );
-        }
+        );
     }
 }

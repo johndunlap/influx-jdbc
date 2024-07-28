@@ -34,7 +34,7 @@ import java.sql.SQLException;
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 public class AbstractUnitTest {
-    protected static SimpleConnection connection = null;
+    protected static InfluxConnection connection = null;
 
     @BeforeClass
     public static void beforeClass() throws SQLException {
@@ -45,7 +45,7 @@ public class AbstractUnitTest {
         }
 
         // Get a connection to the database
-        connection = SimpleConnection.connect(
+        connection = InfluxConnection.connect(
             "jdbc:hsqldb:mem:test",
             "sa",
             ""

@@ -26,7 +26,6 @@ package org.voidzero.influx.jdbc;
  * #L%
  */
 
-import org.voidzero.influx.jdbc.entity.User;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -42,11 +41,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.voidzero.influx.jdbc.InfluxConnection.toCamelCase;
 
 /**
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
-public class SimpleConnectionTest extends AbstractUnitTest {
+public class InfluxConnectionTest extends AbstractUnitTest {
     @Test
     public void testExecuteMethod() throws SQLException {
         String oldPassword = "password";
@@ -123,11 +123,11 @@ public class SimpleConnectionTest extends AbstractUnitTest {
     public void testFetchEntityMethod() throws ParseException, SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        User user = connection.fetchEntity(
-            User.class,
-            "select id, username, password, active, last_active, balance from users where id = ?",
-            1
-        );
+        String sql = "select id, username, password, active, last_active, balance from users where id = ?";
+
+        User user = connection.query(sql)
+                .addParam(1)
+                .fetchEntity(User.class);
 
         assertEquals(user.getId(), Long.valueOf(1));
         assertEquals(user.getUsername(), "admin");
@@ -310,15 +310,90 @@ public class SimpleConnectionTest extends AbstractUnitTest {
 
     @Test
     public void testToCamelCaseMethod() throws SQLException {
-        assertEquals("myColumnName", connection.toCamelCase("my_column_name"));
-        assertEquals("thisIsATest", connection.toCamelCase("this_is_a_test"));
-        assertEquals("test", connection.toCamelCase("test"));
-        assertEquals("test", connection.toCamelCase("tEst"));
+        assertEquals("myColumnName", toCamelCase("my_column_name"));
+        assertEquals("thisIsATest", toCamelCase("this_is_a_test"));
+        assertEquals("test", toCamelCase("test"));
+        assertEquals("test", toCamelCase("tEst"));
 
         // Some databases are case-insensitive, so we can't rely on the case
         // of the column name
-        assertEquals("myColumnName", connection.toCamelCase("MY_COLUMN_NAME"));
-        assertEquals("myColumnName", connection.toCamelCase("My_CoLuMn_NaMe"));
-        assertEquals("thisIsATest", connection.toCamelCase("THIS_IS_A_TEST"));
+        assertEquals("myColumnName", toCamelCase("MY_COLUMN_NAME"));
+        assertEquals("myColumnName", toCamelCase("My_CoLuMn_NaMe"));
+        assertEquals("thisIsATest", toCamelCase("THIS_IS_A_TEST"));
+    }
+
+    /**
+     * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+     */
+    private static class User {
+        private Long id;
+        private String username;
+        private String password;
+        private Boolean active;
+        private Date lastActive;
+        private BigDecimal balance;
+
+        public User() {
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public void setId(Long id) {
+            this.id = id;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public void setUsername(String username) {
+            this.username = username;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public Boolean getActive() {
+            return active;
+        }
+
+        public void setActive(Boolean active) {
+            this.active = active;
+        }
+
+        public Date getLastActive() {
+            return lastActive;
+        }
+
+        public void setLastActive(Date lastActive) {
+            this.lastActive = lastActive;
+        }
+
+        public BigDecimal getBalance() {
+            return balance;
+        }
+
+        public void setBalance(BigDecimal balance) {
+            this.balance = balance;
+        }
+
+        @Override
+        public String toString() {
+            return "User{" +
+                    "id=" + id +
+                    ", username='" + username + '\'' +
+                    ", password='" + password + '\'' +
+                    ", active=" + active +
+                    ", lastActive=" + lastActive +
+                    ", balance=" + balance +
+                    '}';
+        }
     }
 }

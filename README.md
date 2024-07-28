@@ -34,6 +34,7 @@ _Dependency coordinates for other build systems can be found [here](http://searc
 
 ```java
 
+import org.voidzero.influx.jdbc.InfluxConnection;
 import org.voidzero.influx.jdbc.SimpleConnection;
 
 import java.sql.SQLException;
@@ -42,7 +43,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        SimpleConnection connection = InfluxJdbc.getConnection("jdbc:hsqldb:mem:test", "sa", "");
+        InfluxConnection connection = InfluxJdbc.getConnection("jdbc:hsqldb:mem:test", "sa", "");
         connection.execute("create table users(\n" +
                 "    id INTEGER not null,\n" +
                 "    username char(25),\n" +

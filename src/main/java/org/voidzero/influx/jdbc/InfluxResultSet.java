@@ -28,6 +28,9 @@ package org.voidzero.influx.jdbc;
 
 import java.io.InputStream;
 import java.io.Reader;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.Array;
@@ -46,16 +49,15 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.Map;
 
 /**
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
-public class SimpleResultSet implements ResultSet {
-    private ResultSet resultSet;
+public class InfluxResultSet implements ResultSet {
+    private final ResultSet resultSet;
 
-    public SimpleResultSet(final ResultSet resultSet) {
+    public InfluxResultSet(final ResultSet resultSet) {
         this.resultSet = resultSet;
     }
 
@@ -1415,5 +1417,109 @@ public class SimpleResultSet implements ResultSet {
     @Deprecated
     public InputStream getUnicodeStream(String columnLabel) throws SQLException {
         return resultSet.getUnicodeStream(columnLabel);
+    }
+
+    public <T> T fetchEntity(final T entity) throws SQLException {
+        try {
+            int columnCount = getColumnCount();
+
+            for (int index = 1; index <= columnCount; index++) {
+                String columnName = InfluxConnection.toCamelCase(getColumnName(index));
+                String columnClassName = getColumnClassName(index);
+                Object value = getValue(index);
+
+                // Attempt to find the appropriate setter method
+                Method setterMethod = findSetter(entity, columnName, columnClassName);
+                Class<?> argumentType = setterMethod.getParameterTypes()[0];
+
+                // Perform automatic type conversions, where possible
+                if (argumentType.equals(Long.class) && value instanceof Integer) {
+                    value = Long.valueOf((Integer)value);
+                }
+                if (argumentType.equals(java.util.Date.class) && value instanceof java.sql.Timestamp) {
+                    value = new java.util.Date(((java.sql.Timestamp) value).getTime());
+                }
+
+                // Invoke the setter
+                setterMethod.invoke(entity, value);
+            }
+
+            return entity;
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+            throw new SQLException("Cannot invoke setter: ", e);
+        }
+    }
+
+    /**
+     * This method attempts to locate the appropriate setter method within the specified object based
+     * on the column name and data type which was returned by the database.
+     * @param entity The entity in which we are looking for a setter method
+     * @param columnName the column name of the data for which we are trying to find a setter method
+     * @param columnTypeName the name of the data type which was returned by the database
+     * @return An instance of @{link org.voidzero.influx.jdbc.SetterMethod()} or null if a setter cannot be found
+     * @throws ClassNotFoundException thrown when something exceptional happens
+     * @throws NoSuchMethodException thrown when something exceptional happens
+     * @throws SQLException thrown when something exceptional happens
+     */
+    protected static Method findSetter(final Object entity, final String columnName, final String columnTypeName) throws ClassNotFoundException, NoSuchMethodException, SQLException {
+        Class<?> columnClass = Class.forName(columnTypeName);
+        Class<?> entityClass = entity.getClass();
+
+        // Attempt to find a setter name for the property
+        String setterName = "set"
+                + String.valueOf(columnName.charAt(0)).toUpperCase()
+                + columnName.substring(1);
+
+        Method setterMethod;
+
+        try {
+            setterMethod = entityClass.getMethod(setterName, columnClass);
+        } catch (NoSuchMethodException e) {
+            // Attempt some type conversions, where possible
+            if (columnTypeName.equals("java.lang.Integer")) {
+                return findSetter(entity, columnName, "java.lang.Long");
+            } else if (columnTypeName.equals("java.sql.Timestamp")) {
+                return findSetter(entity, columnName, "java.util.Date");
+            } else {
+                throw e;
+            }
+        }
+
+        Type[] parameterTypes = setterMethod.getParameterTypes();
+
+        if (parameterTypes.length != 1) {
+            throw new SQLException("Setter methods should only accept a single parameter");
+        }
+
+        Type setterArgumentType = parameterTypes[0];
+
+        // TODO: This probably isn't very portable
+        String setterArgumentTypeName = setterArgumentType.toString().replaceAll("class ", "");
+
+        if (!setterArgumentTypeName.equals(columnTypeName)) {
+            throw new SQLException("Setter argument type("
+                    + setterArgumentTypeName
+                    + ") does not match the column type name("
+                    + columnTypeName
+                    + ")"
+            );
+        }
+
+        // Return the setter
+        return setterMethod;
+    }
+
+    public <T> T fetchEntity(final Class<T> clazz) throws SQLException {
+        try {
+
+            T entity = clazz.getDeclaredConstructor().newInstance();
+            return fetchEntity(entity);
+        } catch (InstantiationException e) {
+            throw new SQLException("Cannot instantiate entity: " + clazz.getCanonicalName(), e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new SQLException("Failed to invoke no-argument constructor of entity: " + clazz.getCanonicalName(), e);
+        } catch (NoSuchMethodException e) {
+            throw new SQLException("Entity does not have a no-argument constructor: " + clazz.getCanonicalName(), e);
+        }
     }
 }
