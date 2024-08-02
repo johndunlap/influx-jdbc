@@ -1530,7 +1530,10 @@ public class InfluxResultSet implements ResultSet {
 
         // Append the header row
         for (int i = 1; i <= columnCount; i++) {
-            if (i > 1) csv.append(",");
+            if (i > 1) {
+                csv.append(",");
+            }
+
             csv.append(escapeCsv(metaData.getColumnName(i)));
         }
         csv.append("\n");
@@ -1538,7 +1541,9 @@ public class InfluxResultSet implements ResultSet {
         // Append the data rows
         while (next()) {
             for (int i = 1; i <= columnCount; i++) {
-                if (i > 1) csv.append(",");
+                if (i > 1) {
+                    csv.append(",");
+                }
                 csv.append(escapeCsv(getString(i)));
             }
             csv.append("\n");
