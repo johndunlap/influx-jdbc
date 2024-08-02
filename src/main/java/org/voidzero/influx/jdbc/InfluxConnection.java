@@ -40,7 +40,6 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
-import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
 import java.sql.SQLClientInfoException;
@@ -76,7 +75,7 @@ public class InfluxConnection implements Connection {
     /**
      * The connection which should be used to interact with the database
      */
-    private final  Connection connection;
+    private final Connection connection;
 
     /**
      * The value of this variable should be true between calls to being and
@@ -170,13 +169,13 @@ public class InfluxConnection implements Connection {
         return fetch(statement);
     }
 
-    public <T> T fetch(final ResultSetHandler<T> handler, final String sql, final Object ... arguments) throws SQLException {
+    public <T> T fetch(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments) throws SQLException {
         try(PreparedStatement statement = prepareCall(sql)) {
             return fetch(handler, statement, arguments);
         }
     }
 
-    public <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object ... arguments) throws SQLException {
+    public <T> T fetch(final InfluxResultSetHandler<T> handler, final PreparedStatement statement, final Object ... arguments) throws SQLException {
         try (InfluxResultSet resultSet = fetch(statement, arguments)) {
             // Return null if there is no data
             if (!resultSet.next()) {
@@ -702,7 +701,7 @@ public class InfluxConnection implements Connection {
      * @throws SQLException thrown when something exceptional happens
      */
     public Date fetchDate(final String sql, final Object ... args) throws SQLException {
-        return fetch((ResultSetHandler<Date>) resultSet -> resultSet.getDate(1), sql, args);
+        return fetch((InfluxResultSetHandler<Date>) resultSet -> resultSet.getDate(1), sql, args);
     }
 
     /**
@@ -919,8 +918,8 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public DatabaseMetaData getMetaData() throws SQLException {
-        return this.connection.getMetaData();
+    public InfluxDatabaseMetadata getMetaData() throws SQLException {
+        return new InfluxDatabaseMetadata(this.connection.getMetaData());
     }
 
     /**

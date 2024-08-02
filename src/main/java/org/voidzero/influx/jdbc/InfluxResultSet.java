@@ -1522,4 +1522,45 @@ public class InfluxResultSet implements ResultSet {
             throw new SQLException("Entity does not have a no-argument constructor: " + clazz.getCanonicalName(), e);
         }
     }
+
+    public StringBuilder toCsv() throws SQLException {
+        StringBuilder csv = new StringBuilder();
+        ResultSetMetaData metaData = getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        // Append the header row
+        for (int i = 1; i <= columnCount; i++) {
+            if (i > 1) csv.append(",");
+            csv.append(escapeCsv(metaData.getColumnName(i)));
+        }
+        csv.append("\n");
+
+        // Append the data rows
+        while (next()) {
+            for (int i = 1; i <= columnCount; i++) {
+                if (i > 1) csv.append(",");
+                csv.append(escapeCsv(getString(i)));
+            }
+            csv.append("\n");
+        }
+
+        return csv;
+    }
+
+    /**
+     * Escapes special characters for CSV format.
+     *
+     * @param value The value to escape.
+     * @return The escaped value.
+     */
+    protected String escapeCsv(String value) {
+        if (value == null) return "";
+        // Escape double quotes by doubling them
+        value = value.replace("\"", "\"\"");
+        // Enclose in quotes if it contains a comma, newline, or quote
+        if (value.contains(",") || value.contains("\n") || value.contains("\"")) {
+            value = "\"" + value + "\"";
+        }
+        return value;
+    }
 }

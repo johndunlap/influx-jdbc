@@ -29,6 +29,7 @@ package org.voidzero.influx.jdbc;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -37,10 +38,8 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.voidzero.influx.jdbc.InfluxConnection.toCamelCase;
 
 /**
@@ -320,6 +319,38 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals("myColumnName", toCamelCase("MY_COLUMN_NAME"));
         assertEquals("myColumnName", toCamelCase("My_CoLuMn_NaMe"));
         assertEquals("thisIsATest", toCamelCase("THIS_IS_A_TEST"));
+    }
+
+    @Test
+    public void testMetaData() throws SQLException {
+        InfluxDatabaseMetadata databaseMetadata = connection.getMetaData();
+        TableMetadata tableMetadata = databaseMetadata.getTable("public", "users");
+        assertNotNull(tableMetadata);
+        assertEquals("PUBLIC", tableMetadata.getSchema());
+        assertEquals("USERS", tableMetadata.getTableName());
+        assertEquals(6, tableMetadata.getColumns().size());
+        assertEquals("ID", tableMetadata.getColumns().get(0).getColumnName());
+        assertEquals("INTEGER", tableMetadata.getColumns().get(0).getTypeName());
+        assertEquals("USERNAME", tableMetadata.getColumns().get(1).getColumnName());
+        assertEquals("VARCHAR", tableMetadata.getColumns().get(1).getTypeName());
+        assertEquals("PASSWORD", tableMetadata.getColumns().get(2).getColumnName());
+        assertEquals("VARCHAR", tableMetadata.getColumns().get(2).getTypeName());
+        assertEquals("ACTIVE", tableMetadata.getColumns().get(3).getColumnName());
+        assertEquals("BOOLEAN", tableMetadata.getColumns().get(3).getTypeName());
+        assertEquals("LAST_ACTIVE", tableMetadata.getColumns().get(4).getColumnName());
+        assertEquals("TIMESTAMP", tableMetadata.getColumns().get(4).getTypeName());
+        assertEquals("BALANCE", tableMetadata.getColumns().get(5).getColumnName());
+        assertEquals("NUMERIC", tableMetadata.getColumns().get(5).getTypeName());
+    }
+
+    @Test
+    public void testResultSetToCsvMethod() throws SQLException {
+        String sql = "select id, username, password, active, last_active, balance from users order by id asc";
+        String expected = "ID,USERNAME,PASSWORD,ACTIVE,LAST_ACTIVE,BALANCE\n" +
+                "1,admin,password,TRUE,1970-01-01 00:00:00.000000,1345.23\n" +
+                "2,bob.wiley,password2,TRUE,1973-02-02 00:00:00.000000,564.77\n";
+        InfluxResultSet resultSet = connection.fetch(sql);
+        assertEquals(expected, resultSet.toCsv().toString());
     }
 
     /**
