@@ -26,23 +26,23 @@ package org.voidzero.influx.jdbc;
  * #L%
  */
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.voidzero.influx.jdbc.InfluxConnection.toCamelCase;
 
 import java.math.BigDecimal;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.voidzero.influx.jdbc.InfluxConnection.toCamelCase;
+import org.junit.Test;
 
 /**
+ * This class verifies the behavior of {@link InfluxConnection}.
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 public class InfluxConnectionTest extends AbstractUnitTest {
@@ -53,11 +53,13 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
         // Change the password
         connection.execute("update users set password = ? where username = ?", newPassword, "admin");
-        assertEquals(newPassword, connection.fetchString("select password from users where username = ?", "admin"));
+        assertEquals(newPassword, connection.fetchString(
+                "select password from users where username = ?", "admin"));
 
         // Change the password back
         connection.execute("update users set password = ? where username = ?", oldPassword, "admin");
-        assertEquals(oldPassword, connection.fetchString("select password from users where username = ?", "admin"));
+        assertEquals(oldPassword, connection.fetchString(
+                "select password from users where username = ?", "admin"));
     }
 
     @Test
@@ -107,8 +109,10 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
     @Test
     public void testFetchBigDecimalMethod() throws SQLException {
-        BigDecimal balance = connection.fetchBigDecimal("select balance from users where username = ?", "admin");
-        assertEquals(Double.valueOf(balance.doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        BigDecimal balance = connection.fetchBigDecimal(
+                "select balance from users where username = ?", "admin");
+        assertEquals(Double.valueOf(balance.doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
     }
 
     @Test
@@ -120,8 +124,6 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
     @Test
     public void testFetchEntityMethod() throws ParseException, SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         String sql = "select id, username, password, active, last_active, balance from users where id = ?";
 
         User user = connection.query(sql)
@@ -132,8 +134,10 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getUsername(), "admin");
         assertEquals(user.getPassword(), "password");
         assertEquals(user.getActive(), true);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         assertEquals(user.getLastActive(), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
 
         // Now attempt to override a value in the entity
         connection.fetchEntity(
@@ -149,13 +153,12 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getPassword(), "password2");
         assertEquals(user.getActive(), true);
         assertEquals(user.getLastActive(), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
     }
 
     @Test
     public void testFetchMapMethod() throws ParseException, SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         Map<String, Object> user = connection.fetchMap(
             "select id, username, password, active, last_active, balance from users where id = ?",
             1
@@ -167,8 +170,11 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.get("username"), "admin");
         assertEquals(user.get("password"), "password");
         assertEquals(user.get("active"), true);
-        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()),
+                formatter.parse("1970-01-01 00:00:00"));
+        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
     }
 
     @Test
@@ -225,8 +231,6 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
     @Test
     public void testFetchAllMapMethod() throws ParseException, SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         List<Map<String, Object>> users = connection.fetchAllMap(
             "select id, username, password, active, last_active, balance from users order by id asc"
         );
@@ -238,22 +242,25 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.get("username"), "admin");
         assertEquals(user.get("password"), "password");
         assertEquals(user.get("active"), true);
-        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()),
+                formatter.parse("1970-01-01 00:00:00"));
+        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
 
         user = users.get(1);
         assertEquals(Long.valueOf((Integer) user.get("id")), Long.valueOf(2));
         assertEquals(user.get("username"), "bob.wiley");
         assertEquals(user.get("password"), "password2");
         assertEquals(user.get("active"), true);
-        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()), formatter.parse("1973-02-02 00:00:00"));
-        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()), Double.valueOf(new BigDecimal("564.77").doubleValue()));
+        assertEquals(new Date(((java.sql.Timestamp) user.get("last_active")).getTime()),
+                formatter.parse("1973-02-02 00:00:00"));
+        assertEquals(Double.valueOf(((BigDecimal) user.get("balance")).doubleValue()),
+                Double.valueOf(new BigDecimal("564.77").doubleValue()));
     }
 
     @Test
     public void testFetchAllEntityMethod() throws ParseException, SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         List<User> users = connection.fetchAllEntity(
             User.class,
             "select id, username, password, active, last_active, balance from users order by id asc"
@@ -266,8 +273,10 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getUsername(), "admin");
         assertEquals(user.getPassword(), "password");
         assertEquals(user.getActive(), true);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         assertEquals(user.getLastActive(), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
 
         user = users.get(1);
         assertEquals(user.getId(), Long.valueOf(2));
@@ -275,13 +284,12 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getPassword(), "password2");
         assertEquals(user.getActive(), true);
         assertEquals(user.getLastActive(), formatter.parse("1973-02-02 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("564.77").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("564.77").doubleValue()));
     }
 
     @Test
     public void testFetchAllEntityMap() throws ParseException, SQLException {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         Map<String, User> users = connection.fetchAllEntityMap(
             User.class,
             "username",
@@ -295,8 +303,10 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getUsername(), "admin");
         assertEquals(user.getPassword(), "password");
         assertEquals(user.getActive(), true);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         assertEquals(user.getLastActive(), formatter.parse("1970-01-01 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("1345.23").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("1345.23").doubleValue()));
 
         user = users.get("bob.wiley");
         assertEquals(user.getId(), Long.valueOf(2));
@@ -304,7 +314,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         assertEquals(user.getPassword(), "password2");
         assertEquals(user.getActive(), true);
         assertEquals(user.getLastActive(), formatter.parse("1973-02-02 00:00:00"));
-        assertEquals(Double.valueOf(user.getBalance().doubleValue()), Double.valueOf(new BigDecimal("564.77").doubleValue()));
+        assertEquals(Double.valueOf(user.getBalance().doubleValue()),
+                Double.valueOf(new BigDecimal("564.77").doubleValue()));
     }
 
     @Test
@@ -346,14 +357,16 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     @Test
     public void testResultSetToCsvMethod() throws SQLException {
         String sql = "select id, username, password, active, last_active, balance from users order by id asc";
-        String expected = "ID,USERNAME,PASSWORD,ACTIVE,LAST_ACTIVE,BALANCE\n" +
-                "1,admin,password,TRUE,1970-01-01 00:00:00.000000,1345.23\n" +
-                "2,bob.wiley,password2,TRUE,1973-02-02 00:00:00.000000,564.77\n";
+        String expected = "ID,USERNAME,PASSWORD,ACTIVE,LAST_ACTIVE,BALANCE\n"
+                + "1,admin,password,TRUE,1970-01-01 00:00:00.000000,1345.23\n"
+                + "2,bob.wiley,password2,TRUE,1973-02-02 00:00:00.000000,564.77\n";
         InfluxResultSet resultSet = connection.fetch(sql);
         assertEquals(expected, resultSet.toCsv().toString());
     }
 
     /**
+     * This class is used by the tests above to verify that object binding works correctly.
+     *
      * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
      */
     private static class User {
@@ -417,14 +430,14 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
         @Override
         public String toString() {
-            return "User{" +
-                    "id=" + id +
-                    ", username='" + username + '\'' +
-                    ", password='" + password + '\'' +
-                    ", active=" + active +
-                    ", lastActive=" + lastActive +
-                    ", balance=" + balance +
-                    '}';
+            return "User{"
+                    + "id=" + id
+                    + ", username='" + username + '\''
+                    + ", password='" + password + '\''
+                    + ", active=" + active
+                    + ", lastActive=" + lastActive
+                    + ", balance=" + balance
+                    + '}';
         }
     }
 }

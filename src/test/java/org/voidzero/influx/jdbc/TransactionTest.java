@@ -26,17 +26,18 @@ package org.voidzero.influx.jdbc;
  * #L%
  */
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.sql.SQLException;
 import java.util.Random;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import org.junit.Test;
 
 /**
+ * This verifies the transactional behavior of the begin, commit, and rollback methods.
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 public class TransactionTest extends AbstractUnitTest {
@@ -72,7 +73,7 @@ public class TransactionTest extends AbstractUnitTest {
             }
 
             connection.commit();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             connection.rollback();
         }
 
@@ -109,7 +110,7 @@ public class TransactionTest extends AbstractUnitTest {
             updatePasswordByUsername("admin", newPassword, connection);
 
             connection.commit();
-        } catch(SQLException e) {
+        } catch (SQLException e) {
             connection.rollback();
             throw e;
         }
@@ -121,14 +122,34 @@ public class TransactionTest extends AbstractUnitTest {
         );
     }
 
-    public static String getPasswordByUsername(final String username, final InfluxConnection connection) throws SQLException {
+    /**
+     * Retreieve a password from the database by username.
+     *
+     * @param username The username which should be used to locate the password
+     * @param connection The connection which should be used to talk to the database
+     * @return The password of the specified user
+     * @throws SQLException Thrown if something goes wrong
+     */
+    public static String getPasswordByUsername(final String username,
+                                               final InfluxConnection connection) throws SQLException {
         return connection.fetchString(
                 "select password from users where username = ?",
                 username
         );
     }
 
-    public static String updatePasswordByUsername(final String username, final String password, final InfluxConnection connection) throws SQLException {
+    /**
+     * Updates the password of the specified username.
+     *
+     * @param username The username of user whose password is being updated.
+     * @param password The new password
+     * @param connection The database connection which should be used to update the password
+     * @return The new password
+     * @throws SQLException Thrown if something goes wrong
+     */
+    public static String updatePasswordByUsername(final String username,
+                                                  final String password,
+                                                  final InfluxConnection connection) throws SQLException {
         connection.execute(
                 "update users set password = ? where username = ?",
                 password,

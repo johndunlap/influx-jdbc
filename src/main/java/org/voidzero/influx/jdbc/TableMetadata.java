@@ -160,17 +160,17 @@ public class TableMetadata {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "catalog='" + catalog + '\'' +
-                ", schema='" + schema + '\'' +
-                ", tableName='" + tableName + '\'' +
-                ", tableType='" + tableType + '\'' +
-                ", remarks='" + remarks + '\'' +
-                ", typeCatalog='" + typeCatalog + '\'' +
-                ", typeSchema='" + typeSchema + '\'' +
-                ", typeName='" + typeName + '\'' +
-                ", selfReferencingColName='" + selfReferencingColName + '\'' +
-                ", refGeneration='" + refGeneration + '\'' +
-                '}';
+        return getClass().getSimpleName() + "{"
+                + "catalog='" + catalog + '\''
+                + ", schema='" + schema + '\''
+                + ", tableName='" + tableName + '\''
+                + ", tableType='" + tableType + '\''
+                + ", remarks='" + remarks + '\''
+                + ", typeCatalog='" + typeCatalog + '\''
+                + ", typeSchema='" + typeSchema + '\''
+                + ", typeName='" + typeName + '\''
+                + ", selfReferencingColName='" + selfReferencingColName + '\''
+                + ", refGeneration='" + refGeneration + '\''
+                + '}';
     }
 }

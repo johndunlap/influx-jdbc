@@ -26,16 +26,22 @@ package org.voidzero.influx.jdbc;
  * #L%
  */
 
+import java.sql.SQLException;
 import org.junit.BeforeClass;
 
-import java.sql.SQLException;
-
 /**
+ * The abstract base class for all database tests.
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 public class AbstractUnitTest {
     protected static InfluxConnection connection = null;
 
+    /**
+     * Create and populate the in-memory database which will be used by tests.
+     *
+     * @throws SQLException Thrown when something goes wrong.
+     */
     @BeforeClass
     public static void beforeClass() throws SQLException {
         // Drop the table so that it can be recreated in a known state,
@@ -52,15 +58,15 @@ public class AbstractUnitTest {
         );
 
         // Create a table
-        connection.execute("create table users(\n" +
-            "   id INTEGER not null,\n" +
-            "   username varchar(100),\n" +
-            "   password varchar(100),\n" +
-            "   active BOOLEAN,\n" +
-            "   last_active TIMESTAMP,\n" +
-            "   balance NUMERIC(10, 2),\n" +
-            "   PRIMARY KEY (id)\n" +
-            ");"
+        connection.execute("create table users(\n"
+            + "   id INTEGER not null,\n"
+            + "   username varchar(100),\n"
+            + "   password varchar(100),\n"
+            + "   active BOOLEAN,\n"
+            + "   last_active TIMESTAMP,\n"
+            + "   balance NUMERIC(10, 2),\n"
+            + "   PRIMARY KEY (id)\n"
+            + ");"
         );
 
         // Add some data

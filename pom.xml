@@ -7,29 +7,53 @@
     <groupId>org.voidzero</groupId>
     <artifactId>influx-jdbc</artifactId>
     <version>0.1.0-SNAPSHOT</version>
-
+    <packaging>jar</packaging>
     <name>influx-jdbc</name>
-    <description>
-	    The simplest way to run SQL queries with Java. 
-    </description>
+
     <url>https://github.com/johndunlap/influx-jdbc</url>
+    <developers>
+        <developer>
+            <name>John Dunlap</name>
+            <email>john.david.dunlap@gmail.com</email>
+        </developer>
+    </developers>
 
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>https://github.com/johndunlap/influx-jdbc/blob/master/LICENSE.md</url>
+            <url>https://opensource.org/licenses/MIT</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <description>
+	    The simplest way to run SQL queries with Java. 
+    </description>
 
     <scm>
+        <connection>scm:git:https://github.com/johndunlap/influx-jdbc.git</connection>
+        <developerConnection>scm:git:https://github.com/johndunlap/influx-jdbc.git</developerConnection>
         <url>https://github.com/johndunlap/influx-jdbc</url>
     </scm>
 
     <properties>
+        <maven.compiler.release>11</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+
+        <!-- Test dependency versions -->
+        <junit.version>4.12</junit.version>
+
+        <!-- Plugin versions -->
+        <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
+        <maven-surefire-plugin.version>3.0.0-M9</maven-surefire-plugin.version>
+        <license-maven-plugin.version>2.0.0</license-maven-plugin.version>
+        <maven-checkstyle-plugin.version>3.2.1</maven-checkstyle-plugin.version>
+        <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>3.5.0</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>3.0.1</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.13</nexus-staging-maven-plugin.version>
+        <maven-release-plugin.version>2.5.1</maven-release-plugin.version>
+        <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <checkstyle.version>8.43</checkstyle.version>
     </properties>
 
     <dependencies>
@@ -52,17 +76,76 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+            </plugin>
+            <plugin>
+                <inherited>false</inherited>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <version>${license-maven-plugin.version}</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
+                    <inceptionYear>2023</inceptionYear>
+                    <organizationName>John Dunlap</organizationName>
+                    <licenseName>mit</licenseName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>first</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-checkstyle-plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${checkstyle.version}</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                    <configLocation>checkstyle.xml</configLocation>
+                    <failOnViolation>true</failOnViolation>
+                    <failsOnError>true</failsOnError>
+                    <consoleOutput>true</consoleOutput>
+                    <linkXRef>true</linkXRef>
+                    <violationSeverity>warning</violationSeverity>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>verify</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>${maven-source-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -73,29 +156,36 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>license-maven-plugin</artifactId>
-                <version>2.0.0</version>
-                <configuration>
-                    <inceptionYear>2024</inceptionYear>
-                    <organizationName>John Dunlap</organizationName>
-                </configuration>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>${maven-gpg-plugin.version}</version>
                 <executions>
                     <execution>
-                        <id>first</id>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>update-file-header</goal>
+                            <goal>sign</goal>
                         </goals>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>mit</licenseName>
-                            <roots>
-                                <root>src/main/java</root>
-                                <root>src/test</root>
-                            </roots>
-                        </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven-compiler-plugin.version}</version>
+                <configuration>
+                    <release>${maven.compiler.release}</release>
+                    <failOnWarning>true</failOnWarning>
+                </configuration>
             </plugin>
         </plugins>
     </build>

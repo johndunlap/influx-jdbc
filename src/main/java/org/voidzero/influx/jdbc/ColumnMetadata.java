@@ -29,6 +29,9 @@ package org.voidzero.influx.jdbc;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+/**
+ * This class contains metadata which describes a single database column.
+ */
 public class ColumnMetadata {
 
     private String catalog;
@@ -289,30 +292,30 @@ public class ColumnMetadata {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "{" +
-                "catalog='" + catalog + '\'' +
-                ", schema='" + schema + '\'' +
-                ", tableName='" + tableName + '\'' +
-                ", columnName='" + columnName + '\'' +
-                ", dataType=" + dataType +
-                ", typeName='" + typeName + '\'' +
-                ", columnSize=" + columnSize +
-                ", decimalDigits=" + decimalDigits +
-                ", numPrecRadix=" + numPrecRadix +
-                ", nullable=" + nullable +
-                ", remarks='" + remarks + '\'' +
-                ", columnDef='" + columnDef + '\'' +
-                ", sqlDataType=" + sqlDataType +
-                ", sqlDatetimeSub=" + sqlDatetimeSub +
-                ", charOctetLength=" + charOctetLength +
-                ", ordinalPosition=" + ordinalPosition +
-                ", isNullable='" + isNullable + '\'' +
-                ", scopeCatalog='" + scopeCatalog + '\'' +
-                ", scopeSchema='" + scopeSchema + '\'' +
-                ", scopeTable='" + scopeTable + '\'' +
-                ", sourceDataType=" + sourceDataType +
-                ", isAutoincrement='" + isAutoincrement + '\'' +
-                ", isGeneratedColumn='" + isGeneratedColumn + '\'' +
-                '}';
+        return getClass().getSimpleName() + "{"
+                + "catalog='" + catalog + '\''
+                + ", schema='" + schema + '\''
+                + ", tableName='" + tableName + '\''
+                + ", columnName='" + columnName + '\''
+                + ", dataType=" + dataType
+                + ", typeName='" + typeName + '\''
+                + ", columnSize=" + columnSize
+                + ", decimalDigits=" + decimalDigits
+                + ", numPrecRadix=" + numPrecRadix
+                + ", nullable=" + nullable
+                + ", remarks='" + remarks + '\''
+                + ", columnDef='" + columnDef + '\''
+                + ", sqlDataType=" + sqlDataType
+                + ", sqlDatetimeSub=" + sqlDatetimeSub
+                + ", charOctetLength=" + charOctetLength
+                + ", ordinalPosition=" + ordinalPosition
+                + ", isNullable='" + isNullable + '\''
+                + ", scopeCatalog='" + scopeCatalog + '\''
+                + ", scopeSchema='" + scopeSchema + '\''
+                + ", scopeTable='" + scopeTable + '\''
+                + ", sourceDataType=" + sourceDataType
+                + ", isAutoincrement='" + isAutoincrement + '\''
+                + ", isGeneratedColumn='" + isGeneratedColumn + '\''
+                + '}';
     }
 }

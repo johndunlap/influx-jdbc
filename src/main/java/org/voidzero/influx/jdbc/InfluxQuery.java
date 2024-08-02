@@ -113,31 +113,39 @@ public class InfluxQuery {
 
         <T> T fetch(final ResultSetHandler<T> handler, final String sql, final Object... arguments) throws SQLException;
 
-        <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object... arguments)
+         throws SQLException;
 
         List<Integer> fetchListInteger(final String sql, final Object... arguments) throws SQLException;
 
-        List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments) throws SQLException;
+        List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments) throws
+         SQLException;
 
         List<Long> fetchListLong(final String sql, final Object... arguments) throws SQLException;
 
         List<Long> fetchListLong(final PreparedStatement statement, final Object... arguments) throws SQLException;
 
-        <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments) throws SQLException;
+        <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments) throws
+         SQLException;
 
-        <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement, final Object... arguments)
+         throws SQLException;
 
-        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql, final Object... arguments) throws SQLException;
+        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
+         final Object... arguments) throws SQLException;
 
-        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel,
+         final PreparedStatement statement, final Object... arguments) throws SQLException;
 
         List<Map<String, Object>> fetchAllMap(final String sql, final Object... arguments) throws SQLException;
 
-        List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object... arguments) throws SQLException;
+        List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object... arguments)
+         throws SQLException;
 
         <T> T fetchEntity(final T entity, final String sql, final Object... arguments) throws SQLException;
 
-        <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object... arguments) throws
+         SQLException;
 
         <T> T fetchEntity(final Class<T> clazz, final String sql, final Object... arguments) throws SQLException;
 
