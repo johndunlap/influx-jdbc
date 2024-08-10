@@ -80,6 +80,12 @@ public class ColumnMetadata {
 
     private String isGeneratedColumn;
 
+    /**
+     * Create a new instance of this class from the specified result set.
+     *
+     * @param resultSet The result set from which data should be taken.
+     * @throws SQLException Thrown if something goes wrong.
+     */
     public ColumnMetadata(final ResultSet resultSet) throws SQLException {
         this.catalog = resultSet.getString("TABLE_CAT");
         this.schema = resultSet.getString("TABLE_SCHEM");

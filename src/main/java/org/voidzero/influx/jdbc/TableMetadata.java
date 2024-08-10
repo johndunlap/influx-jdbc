@@ -31,6 +31,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This is a wrapper for a result set which contains table metadata.
+ */
 public class TableMetadata {
     private String catalog;
 
@@ -57,17 +60,23 @@ public class TableMetadata {
      */
     private List<ColumnMetadata> columns = new ArrayList<>();
 
-    public TableMetadata(final ResultSet tableResultSet) throws SQLException {
-        this.catalog = tableResultSet.getString("TABLE_CAT");
-        this.schema = tableResultSet.getString("TABLE_SCHEM");
-        this.tableName = tableResultSet.getString("TABLE_NAME");
-        this.tableType = tableResultSet.getString("TABLE_TYPE");
-        this.remarks = tableResultSet.getString("REMARKS");
-        this.typeCatalog = tableResultSet.getString("TYPE_CAT");
-        this.typeSchema = tableResultSet.getString("TYPE_SCHEM");
-        this.typeName = tableResultSet.getString("TYPE_NAME");
-        this.selfReferencingColName = tableResultSet.getString("SELF_REFERENCING_COL_NAME");
-        this.refGeneration = tableResultSet.getString("REF_GENERATION");
+    /**
+     * Create a new instance and populate it with the specified {@link ResultSet}.
+     *
+     * @param resultSet The result set from which table metadata should be extracted.
+     * @throws SQLException Thrown if something goes wrong.
+     */
+    public TableMetadata(final ResultSet resultSet) throws SQLException {
+        this.catalog = resultSet.getString("TABLE_CAT");
+        this.schema = resultSet.getString("TABLE_SCHEM");
+        this.tableName = resultSet.getString("TABLE_NAME");
+        this.tableType = resultSet.getString("TABLE_TYPE");
+        this.remarks = resultSet.getString("REMARKS");
+        this.typeCatalog = resultSet.getString("TYPE_CAT");
+        this.typeSchema = resultSet.getString("TYPE_SCHEM");
+        this.typeName = resultSet.getString("TYPE_NAME");
+        this.selfReferencingColName = resultSet.getString("SELF_REFERENCING_COL_NAME");
+        this.refGeneration = resultSet.getString("REF_GENERATION");
     }
 
     public List<ColumnMetadata> getColumns() {

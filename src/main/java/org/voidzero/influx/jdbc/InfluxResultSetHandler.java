@@ -31,6 +31,7 @@ import java.sql.SQLException;
 /**
  * This interface is necessary because the built-in functional interfaces cannot pass
  * checked exceptions up the stack.
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 @FunctionalInterface

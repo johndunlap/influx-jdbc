@@ -169,13 +169,15 @@ public class InfluxConnection implements Connection {
         return fetch(statement);
     }
 
-    public <T> T fetch(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments) throws SQLException {
+    public <T> T fetch(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments)
+            throws SQLException {
         try(PreparedStatement statement = prepareCall(sql)) {
             return fetch(handler, statement, arguments);
         }
     }
 
-    public <T> T fetch(final InfluxResultSetHandler<T> handler, final PreparedStatement statement, final Object ... arguments) throws SQLException {
+    public <T> T fetch(final InfluxResultSetHandler<T> handler, final PreparedStatement statement,
+                       final Object ... arguments) throws SQLException {
         try (InfluxResultSet resultSet = fetch(statement, arguments)) {
             // Return null if there is no data
             if (!resultSet.next()) {
@@ -192,7 +194,8 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments)
+            throws SQLException {
         List<Integer> list = fetch(resultSet -> {
             List<Integer> integerList = new ArrayList<>();
 
@@ -284,13 +287,15 @@ public class InfluxConnection implements Connection {
      * @return a list of entities which have the results of the query injected into them
      * @throws SQLException thrown when something exceptional happens
      */
-    public <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments) throws SQLException {
+    public <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments)
+            throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return fetchAllEntity(clazz, statement, arguments);
         }
     }
 
-    public <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement,
+                                      final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -307,13 +312,15 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql, final Object... arguments) throws SQLException {
+    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
+                                                final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return fetchAllEntityMap(clazz, columnLabel, statement, arguments);
         }
     }
 
-    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel,
+                                                final PreparedStatement statement, final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -336,7 +343,8 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object ... arguments) throws SQLException {
+    public List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object ... arguments)
+            throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -360,7 +368,8 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object ... arguments) throws SQLException {
+    public <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object ... arguments)
+            throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -402,7 +411,8 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public Map<String, Object> fetchMap(final PreparedStatement statement, final Object ... arguments) throws SQLException {
+    public Map<String, Object> fetchMap(final PreparedStatement statement, final Object ... arguments)
+            throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
@@ -734,7 +744,8 @@ public class InfluxConnection implements Connection {
      * @return the statement after the arguments have been bound to it
      * @throws SQLException thrown when something exceptional happens
      */
-    public PreparedStatement bindArguments(final PreparedStatement statement, final Object ... args) throws SQLException {
+    public PreparedStatement bindArguments(final PreparedStatement statement, final Object ... args)
+            throws SQLException {
         int index = 1;
 
         // Iterate through the arguments
@@ -755,7 +766,8 @@ public class InfluxConnection implements Connection {
      * @param value the object which should be bound to the statement
      * @throws SQLException thrown when something exceptional happens
      */
-    protected static void bindObject(final PreparedStatement statement, final int position, final Object value) throws SQLException {
+    protected static void bindObject(final PreparedStatement statement, final int position, final Object value)
+            throws SQLException {
         if (value == null) {
             statement.setNull(position, Types.NULL);
         } else if (value instanceof String) {
@@ -988,7 +1000,8 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
+            throws SQLException {
         return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
     }
 
@@ -1058,21 +1071,24 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
         return this.connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     /**
      * {@inheritDoc}
      */
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
+                                              int resultSetHoldability) throws SQLException {
         return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     /**
      * {@inheritDoc}
      */
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency, int resultSetHoldability) throws SQLException {
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+                                         int resultSetHoldability) throws SQLException {
         return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
@@ -1265,10 +1281,19 @@ public class InfluxConnection implements Connection {
         return this.connection.isWrapperFor(iface);
     }
 
+    /**
+     * Create a new query builder for the specified query.
+     * @param sql The query which should be executed
+     * @return An instance of {@link QueryBuilder}
+     * @throws SQLException Thrown when something goes wrong.
+     */
     public QueryBuilder query(final String sql) throws SQLException {
         return new QueryBuilder(this, sql);
     }
 
+    /**
+     * A simple query builder class which handles ordinal (not named) query parameters.
+     */
     public static class QueryBuilder {
         private final PreparedStatement preparedStatement;
         private int position = 1;
@@ -1345,33 +1370,42 @@ public class InfluxConnection implements Connection {
 /*
         SimpleResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException;
 
-        <T> T fetch(final ResultSetHandler<T> handler, final String sql, final Object... arguments) throws SQLException;
+        <T> T fetch(final ResultSetHandler<T> handler, final String sql, final Object... arguments)
+        throws SQLException;
 
-        <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> T fetch(final ResultSetHandler<T> handler, final PreparedStatement statement, final Object... arguments)
+        throws SQLException;
 
         List<Integer> fetchListInteger(final String sql, final Object... arguments) throws SQLException;
 
-        List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments) throws SQLException;
+        List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments)
+        throws SQLException;
 
         List<Long> fetchListLong(final String sql, final Object... arguments) throws SQLException;
 
         List<Long> fetchListLong(final PreparedStatement statement, final Object... arguments) throws SQLException;
 
-        <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments) throws SQLException;
+        <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments)
+        throws SQLException;
 
-        <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement, final Object... arguments)
+        throws SQLException;
 
-        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql, final Object... arguments) throws SQLException;
+        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
+        final Object... arguments) throws SQLException;
 
-        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel,
+        final PreparedStatement statement, final Object... arguments) throws SQLException;
 
         List<Map<String, Object>> fetchAllMap(final String sql, final Object... arguments) throws SQLException;
 
-        List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object... arguments) throws SQLException;
+        List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object... arguments)
+        throws SQLException;
 
         <T> T fetchEntity(final T entity, final String sql, final Object... arguments) throws SQLException;
 
-        <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object... arguments) throws SQLException;
+        <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object... arguments)
+        throws SQLException;
 
         <T> T fetchEntity(final Class<T> clazz, final String sql, final Object... arguments) throws SQLException;
 
