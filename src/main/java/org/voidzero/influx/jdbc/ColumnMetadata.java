@@ -112,188 +112,214 @@ public class ColumnMetadata {
         this.isGeneratedColumn = resultSet.getString("IS_GENERATEDCOLUMN");
     }
 
+    /**
+     * Get the catalog of this column.
+     *
+     * @return The catalog of this column
+     */
     public String getCatalog() {
         return catalog;
     }
 
-    public void setCatalog(String catalog) {
-        this.catalog = catalog;
-    }
-
+    /**
+     * Get the schema of this column.
+     *
+     * @return the schema of this column
+     */
     public String getSchema() {
         return schema;
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
+    /**
+     * Get the table name to which this column belongs.
+     *
+     * @return The table name to which this column belongs
+     */
     public String getTableName() {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
+    /**
+     * Get column name.
+     *
+     * @return column name
+     */
     public String getColumnName() {
         return columnName;
     }
 
-    public void setColumnName(String columnName) {
-        this.columnName = columnName;
-    }
-
+    /**
+     * Get column data type.
+     *
+     * @return column data type
+     */
     public int getDataType() {
         return dataType;
     }
 
-    public void setDataType(int dataType) {
-        this.dataType = dataType;
-    }
-
+    /**
+     * Get the type name of this column.
+     *
+     * @return Type name for this column
+     */
     public String getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
+    /**
+     * Get the column size.
+     *
+     * @return The column size
+     */
     public int getColumnSize() {
         return columnSize;
     }
 
-    public void setColumnSize(int columnSize) {
-        this.columnSize = columnSize;
-    }
-
+    /**
+     * Get the number of decimal digits supported by this column.
+     *
+     * @return The number of decimal digits supported by this column
+     */
     public int getDecimalDigits() {
         return decimalDigits;
     }
 
-    public void setDecimalDigits(int decimalDigits) {
-        this.decimalDigits = decimalDigits;
-    }
-
+    /**
+     * Get numPrecRadix.
+     *
+     * @return numPredRadix
+     */
     public int getNumPrecRadix() {
         return numPrecRadix;
     }
 
-    public void setNumPrecRadix(int numPrecRadix) {
-        this.numPrecRadix = numPrecRadix;
-    }
-
+    /**
+     * Return non-zero if this column is nullable and 0 otherwise.
+     *
+     * @return Non-zero if this column is nullable and 0 otherwise
+     */
     public int getNullable() {
         return nullable;
     }
 
-    public void setNullable(int nullable) {
-        this.nullable = nullable;
-    }
-
+    /**
+     * Get the comments which have been associated with this column.
+     *
+     * @return The comments which have been associated with this column
+     */
     public String getRemarks() {
         return remarks;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
+    /**
+     * Get the column definition.
+     *
+     * @return column definition
+     */
     public String getColumnDef() {
         return columnDef;
     }
 
-    public void setColumnDef(String columnDef) {
-        this.columnDef = columnDef;
-    }
-
+    /**
+     * Get the SQL data type of this column.
+     *
+     * @return the SQL data type of this column
+     */
     public int getSqlDataType() {
         return sqlDataType;
     }
 
-    public void setSqlDataType(int sqlDataType) {
-        this.sqlDataType = sqlDataType;
-    }
-
+    /**
+     * Get sqlDatetimeSub.
+     *
+     * @return sqlDatetimeSub
+     */
     public int getSqlDatetimeSub() {
         return sqlDatetimeSub;
     }
 
-    public void setSqlDatetimeSub(int sqlDatetimeSub) {
-        this.sqlDatetimeSub = sqlDatetimeSub;
-    }
-
+    /**
+     * Get the character octet length of this column.
+     *
+     * @return The character octet length of this column
+     */
     public int getCharOctetLength() {
         return charOctetLength;
     }
 
-    public void setCharOctetLength(int charOctetLength) {
-        this.charOctetLength = charOctetLength;
-    }
-
+    /**
+     * Get the ordinal position of this column within its table.
+     *
+     * @return The ordinal position of this column within its table
+     */
     public int getOrdinalPosition() {
         return ordinalPosition;
     }
 
-    public void setOrdinalPosition(int ordinalPosition) {
-        this.ordinalPosition = ordinalPosition;
-    }
-
+    /**
+     * TODO: Why is the type string here?
+     * Returns true if this column is nullable and false otherwise.
+     *
+     * @return True if this column is nullable and false otherwise
+     */
     public String getIsNullable() {
         return isNullable;
     }
 
-    public void setIsNullable(String isNullable) {
-        this.isNullable = isNullable;
-    }
-
+    /**
+     * Get scope catalog.
+     *
+     * @return scope catalog
+     */
     public String getScopeCatalog() {
         return scopeCatalog;
     }
 
-    public void setScopeCatalog(String scopeCatalog) {
-        this.scopeCatalog = scopeCatalog;
-    }
-
+    /**
+     * Get scope schema.
+     *
+     * @return scope schema
+     */
     public String getScopeSchema() {
         return scopeSchema;
     }
 
-    public void setScopeSchema(String scopeSchema) {
-        this.scopeSchema = scopeSchema;
-    }
-
+    /**
+     * Get scope table.
+     *
+     * @return scope table
+     */
     public String getScopeTable() {
         return scopeTable;
     }
 
-    public void setScopeTable(String scopeTable) {
-        this.scopeTable = scopeTable;
-    }
-
+    /**
+     * Get source data type.
+     *
+     * @return source data type
+     */
     public Short getSourceDataType() {
         return sourceDataType;
     }
 
-    public void setSourceDataType(Short sourceDataType) {
-        this.sourceDataType = sourceDataType;
-    }
-
+    /**
+     * TODO: Why isn't this boolean?
+     * Get isAutoincrement.
+     *
+     * @return isAutoincrement
+     */
     public String getIsAutoincrement() {
         return isAutoincrement;
     }
 
-    public void setIsAutoincrement(String isAutoincrement) {
-        this.isAutoincrement = isAutoincrement;
-    }
-
+    /**
+     * TODO: Why isn't this boolean?
+     * Get isGeneratedColumn.
+     *
+     * @return isGeneratedColumn
+     */
     public String getIsGeneratedColumn() {
         return isGeneratedColumn;
-    }
-
-    public void setIsGeneratedColumn(String isGeneratedColumn) {
-        this.isGeneratedColumn = isGeneratedColumn;
     }
 
     @Override

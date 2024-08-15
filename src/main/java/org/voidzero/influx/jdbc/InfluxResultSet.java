@@ -59,6 +59,11 @@ import java.util.Map;
 public class InfluxResultSet implements ResultSet {
     private final ResultSet resultSet;
 
+    /**
+     * Construct a new influx result set from another result set.
+     *
+     * @param resultSet The result set which should be decorated by this result set
+     */
     public InfluxResultSet(final ResultSet resultSet) {
         this.resultSet = resultSet;
     }
@@ -71,24 +76,38 @@ public class InfluxResultSet implements ResultSet {
         return false;
     }
 
+    /**
+     * Get the number of columns in the result set.
+     *
+     * @return The number of columns in the result set
+     * @throws SQLException Thrown if something goes wrong
+     */
     public int getColumnCount() throws SQLException {
         return resultSet.getMetaData().getColumnCount();
     }
 
+    /**
+     * Returns the column name of the specified index in the result set.
+     *
+     * @param position The column index within the result set for which the column name is being requested
+     *
+     * @return The name of the column identified by the specified index
+     * @throws SQLException Thrown when something goes wrong
+     */
     public String getColumnName(final int position) throws SQLException {
         return resultSet.getMetaData().getColumnName(position);
     }
 
+    /**
+     * Get the class name of the column identified by the specified index.
+     *
+     * @param position Numeric index in the result set
+     *
+     * @return The class name of values identified by the specified index
+     * @throws SQLException Thrown when something goes wrong
+     */
     public String getColumnClassName(final int position) throws SQLException {
         return resultSet.getMetaData().getColumnClassName(position);
-    }
-
-    public Object getValue(final int position) throws SQLException {
-        return resultSet.getObject(position);
-    }
-
-    public String getStringByName(final String columnLabel) throws SQLException {
-        return resultSet.getString(columnLabel);
     }
 
     /**
@@ -1462,7 +1481,7 @@ public class InfluxResultSet implements ResultSet {
             for (int index = 1; index <= columnCount; index++) {
                 String columnName = InfluxConnection.toCamelCase(getColumnName(index));
                 String columnClassName = getColumnClassName(index);
-                Object value = getValue(index);
+                Object value = getObject(index);
 
                 // Attempt to find the appropriate setter method
                 Method setterMethod = findSetter(entity, columnName, columnClassName);

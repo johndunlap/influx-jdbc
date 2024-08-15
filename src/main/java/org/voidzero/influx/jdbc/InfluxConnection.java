@@ -88,14 +88,41 @@ public class InfluxConnection implements Connection {
      */
     private boolean transactionActive = false;
 
+    /**
+     * Connect to a database using the specified parameters.
+     *
+     * @param url The url to which the driver should connect
+     * @param user The username with which the driver should authenticate
+     * @param password The password with which the driver should authenticate
+     *
+     * @return An instance of {@link InfluxConnection} which can be used to interact with the database
+     * @throws SQLException Thrown if something goes wrong
+     */
     public static InfluxConnection connect(String url, String user, String password) throws SQLException {
         return new InfluxConnection(DriverManager.getConnection(url, user, password));
     }
 
+    /**
+     * Connect to a database using the specified parameters.
+     *
+     * @param url The url to which the driver should connect
+     *
+     * @return An instance of {@link InfluxConnection} which can be used to interact with the database
+     * @throws SQLException Thrown if something goes wrong
+     */
     public static InfluxConnection connect(String url) throws SQLException {
         return new InfluxConnection(DriverManager.getConnection(url));
     }
 
+    /**
+     * Connect to a database using the specified parameters.
+     *
+     * @param url The url to which the driver should connect
+     * @param info Configuration properties which should be passed to the driver
+     *
+     * @return An instance of {@link InfluxConnection} which can be used to interact with the database
+     * @throws SQLException Thrown if something goes wrong
+     */
     public static InfluxConnection connect(String url, Properties info) throws SQLException {
         return new InfluxConnection(DriverManager.getConnection(url, info));
     }
@@ -435,7 +462,7 @@ public class InfluxConnection implements Connection {
 
             // Iterate over the results
             while (resultSet.next()) {
-                entities.put(resultSet.getStringByName(columnLabel), resultSet.getEntity(clazz));
+                entities.put(resultSet.getString(columnLabel), resultSet.getEntity(clazz));
             }
 
             return entities;
@@ -625,7 +652,7 @@ public class InfluxConnection implements Connection {
 
         for (int index = 1; index <= columnCount; index++) {
             String columnName = resultSet.getColumnName(index).toLowerCase();
-            Object value = resultSet.getValue(index);
+            Object value = resultSet.getObject(index);
             entity.put(columnName, value);
         }
 
@@ -1557,11 +1584,25 @@ public class InfluxConnection implements Connection {
             this.preparedStatement = connection.prepareStatement(sql);
         }
 
+        /**
+         * Add a parameter value to the query.
+         *
+         * @param value The value which should be bound to the query
+         *
+         * @return A reference to this class to support method chaining
+         * @throws SQLException Thrown if something goes wrong
+         */
         public QueryBuilder addParam(Object value) throws SQLException {
             bindObject(preparedStatement, position++, value);
             return this;
         }
 
+        /**
+         * Execute the query.
+         *
+         * @return A result set which contains the results of the query
+         * @throws SQLException Thrown if something goes wrong
+         */
         public InfluxResultSet get() throws SQLException {
             return new InfluxResultSet(preparedStatement.executeQuery());
         }
@@ -1585,7 +1626,14 @@ public class InfluxConnection implements Connection {
             }
         }
 
-        // TODO
+        /**
+         * Get a list of the specified entity from the database.
+         *
+         * @param clazz The class type of the instances which should be returned
+         * @param <T> The generic type of the objects which should be returned
+         *
+         * @return List containing zero or more objects of the specified type
+         */
         public <T> List<T> getList(Class<T> clazz) {
             throw new RuntimeException("IMPLEMENT ME");
         }

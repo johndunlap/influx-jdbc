@@ -79,92 +79,112 @@ public class TableMetadata {
         this.refGeneration = resultSet.getString("REF_GENERATION");
     }
 
+    /**
+     * Get a list of {@link ColumnMetadata} objects which describe the columns in the table.
+     *
+     * @return List of {@link ColumnMetadata} objects which describe the columns in the table.
+     */
     public List<ColumnMetadata> getColumns() {
         return columns;
     }
 
+    /**
+     * Sets the list of {@link ColumnMetadata} objects which describe the columns in the table.
+     *
+     * @param columns List of {@link ColumnMetadata} objects which describe the columns in the table.
+     */
     public void setColumns(List<ColumnMetadata> columns) {
         this.columns = columns;
     }
 
+    /**
+     * Gets the catalog name of this table.
+     *
+     * @return The catalog name of this table.
+     */
     public String getCatalog() {
         return catalog;
     }
 
-    public void setCatalog(String catalog) {
-        this.catalog = catalog;
-    }
-
+    /**
+     * Gets the schema of this table.
+     *
+     * @return The schema of this table.
+     */
     public String getSchema() {
         return schema;
     }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
-
+    /**
+     * Gets the name of this table.
+     *
+     * @return The name of this table.
+     */
     public String getTableName() {
         return tableName;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
-    }
-
+    /**
+     * Gets the table type of this table.
+     *
+     * @return the table type of this table.
+     */
     public String getTableType() {
         return tableType;
     }
 
-    public void setTableType(String tableType) {
-        this.tableType = tableType;
-    }
-
+    /**
+     * Gets the remarks or comments which describe this table.
+     *
+     * @return The remarks or comments which describe this table.
+     */
     public String getRemarks() {
         return remarks;
     }
 
-    public void setRemarks(String remarks) {
-        this.remarks = remarks;
-    }
-
+    /**
+     * Gets the type catalog name of this table.
+     *
+     * @return The type catalog name of this table.
+     */
     public String getTypeCatalog() {
         return typeCatalog;
     }
 
-    public void setTypeCatalog(String typeCatalog) {
-        this.typeCatalog = typeCatalog;
-    }
-
+    /**
+     * Gets the type schema name of this table.
+     *
+     * @return The type schema name of this table.
+     */
     public String getTypeSchema() {
         return typeSchema;
     }
 
-    public void setTypeSchema(String typeSchema) {
-        this.typeSchema = typeSchema;
-    }
-
+    /**
+     * Gets the type name of this table.
+     *
+     * @return The type name of this table.
+     */
     public String getTypeName() {
         return typeName;
     }
 
-    public void setTypeName(String typeName) {
-        this.typeName = typeName;
-    }
-
+    /**
+     * Get the self referencing column name of this table.
+     *
+     * @return Get the self referencing column name of this table.
+     */
     public String getSelfReferencingColName() {
         return selfReferencingColName;
     }
 
-    public void setSelfReferencingColName(String selfReferencingColName) {
-        this.selfReferencingColName = selfReferencingColName;
-    }
-
+    /**
+     * Get the ref generation for this table.
+     *
+     * @return The ref generation for this table.
+     */
     public String getRefGeneration() {
         return refGeneration;
-    }
-
-    public void setRefGeneration(String refGeneration) {
-        this.refGeneration = refGeneration;
     }
 
     @Override

@@ -32,9 +32,18 @@ import java.sql.SQLException;
  * This interface is necessary because the built-in functional interfaces cannot pass
  * checked exceptions up the stack.
  *
+ * @param <T> The generic type of the value which will be returned from the handler
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 @FunctionalInterface
 public interface InfluxResultSetHandler<T> {
+    /**
+     * This method will be implemented by lambda expressions.
+     *
+     * @param influxResultSet The result set which contains the data that handlers will operate on
+     * @return The result of the handler
+     * @throws SQLException Thrown when something goes wrong
+     */
     T handle(final InfluxResultSet influxResultSet) throws SQLException;
 }

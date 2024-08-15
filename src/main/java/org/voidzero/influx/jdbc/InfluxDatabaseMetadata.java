@@ -40,6 +40,11 @@ import java.util.List;
 public class InfluxDatabaseMetadata implements DatabaseMetaData {
     private final DatabaseMetaData metadata;
 
+    /**
+     * Wrap the specified database metadata object.
+     *
+     * @param metadata The database metadata object which should be wrapped
+     */
     public InfluxDatabaseMetadata(final DatabaseMetaData metadata) {
         this.metadata = metadata;
     }
