@@ -52,6 +52,8 @@ import java.util.Calendar;
 import java.util.Map;
 
 /**
+ * Delegate class which simplifies working with result sets.
+ *
  * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
  */
 public class InfluxResultSet implements ResultSet {
@@ -120,106 +122,15 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
-    public boolean getBoolean(int columnIndex) throws SQLException {
-        return resultSet.getBoolean(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public byte getByte(int columnIndex) throws SQLException {
-        return resultSet.getByte(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public short getShort(int columnIndex) throws SQLException {
-        return resultSet.getShort(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public int getInt(int columnIndex) throws SQLException {
-        return resultSet.getInt(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public long getLong(int columnIndex) throws SQLException {
-        return resultSet.getLong(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public float getFloat(int columnIndex) throws SQLException {
-        return resultSet.getFloat(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public double getDouble(int columnIndex) throws SQLException {
-        return resultSet.getDouble(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
-        return resultSet.getBigDecimal(columnIndex, scale);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public byte[] getBytes(int columnIndex) throws SQLException {
-        return resultSet.getBytes(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Date getDate(int columnIndex) throws SQLException {
-        return resultSet.getDate(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Time getTime(int columnIndex) throws SQLException {
-        return resultSet.getTime(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Timestamp getTimestamp(int columnIndex) throws SQLException {
-        return resultSet.getTimestamp(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public InputStream getAsciiStream(int columnIndex) throws SQLException {
-        return resultSet.getAsciiStream(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public InputStream getBinaryStream(int columnIndex) throws SQLException {
-        return resultSet.getBinaryStream(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public String getString(String columnLabel) throws SQLException {
         return resultSet.getString(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public boolean getBoolean(int columnIndex) throws SQLException {
+        return resultSet.getBoolean(columnIndex);
     }
 
     /**
@@ -232,8 +143,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public byte getByte(int columnIndex) throws SQLException {
+        return resultSet.getByte(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public byte getByte(String columnLabel) throws SQLException {
         return resultSet.getByte(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public short getShort(int columnIndex) throws SQLException {
+        return resultSet.getShort(columnIndex);
     }
 
     /**
@@ -246,8 +171,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public int getInt(int columnIndex) throws SQLException {
+        return resultSet.getInt(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public int getInt(String columnLabel) throws SQLException {
         return resultSet.getInt(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public long getLong(int columnIndex) throws SQLException {
+        return resultSet.getLong(columnIndex);
     }
 
     /**
@@ -260,8 +199,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public float getFloat(int columnIndex) throws SQLException {
+        return resultSet.getFloat(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public float getFloat(String columnLabel) throws SQLException {
         return resultSet.getFloat(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public double getDouble(int columnIndex) throws SQLException {
+        return resultSet.getDouble(columnIndex);
     }
 
     /**
@@ -274,8 +227,36 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public BigDecimal getBigDecimal(int columnIndex, int scale) throws SQLException {
+        return resultSet.getBigDecimal(columnIndex, scale);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public BigDecimal getBigDecimal(String columnLabel, int scale) throws SQLException {
         return resultSet.getBigDecimal(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
+        return resultSet.getBigDecimal(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
+        return resultSet.getBigDecimal(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public byte[] getBytes(int columnIndex) throws SQLException {
+        return resultSet.getBytes(columnIndex);
     }
 
     /**
@@ -288,8 +269,36 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Date getDate(int columnIndex) throws SQLException {
+        return resultSet.getDate(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Date getDate(String columnLabel) throws SQLException {
         return resultSet.getDate(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Date getDate(int columnIndex, Calendar cal) throws SQLException {
+        return resultSet.getDate(columnIndex, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Date getDate(String columnLabel, Calendar cal) throws SQLException {
+        return resultSet.getDate(columnLabel, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Time getTime(int columnIndex) throws SQLException {
+        return resultSet.getTime(columnIndex);
     }
 
     /**
@@ -302,6 +311,27 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
+        return resultSet.getTime(columnIndex, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Time getTime(String columnLabel, Calendar cal) throws SQLException {
+        return resultSet.getTime(columnLabel, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Timestamp getTimestamp(int columnIndex) throws SQLException {
+        return resultSet.getTimestamp(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Timestamp getTimestamp(String columnLabel) throws SQLException {
         return resultSet.getTimestamp(columnLabel);
     }
@@ -309,8 +339,36 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
+        return resultSet.getTimestamp(columnIndex, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
+        return resultSet.getTimestamp(columnLabel, cal);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream getAsciiStream(int columnIndex) throws SQLException {
+        return resultSet.getAsciiStream(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public InputStream getAsciiStream(String columnLabel) throws SQLException {
         return resultSet.getAsciiStream(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public InputStream getBinaryStream(int columnIndex) throws SQLException {
+        return resultSet.getBinaryStream(columnIndex);
     }
 
     /**
@@ -365,6 +423,34 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException {
+        return resultSet.getObject(columnIndex, map);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException {
+        return resultSet.getObject(columnLabel, map);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        return resultSet.getObject(columnIndex, type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        return resultSet.getObject(columnLabel, type);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public int findColumn(String columnLabel) throws SQLException {
         return resultSet.findColumn(columnLabel);
     }
@@ -381,20 +467,6 @@ public class InfluxResultSet implements ResultSet {
      */
     public Reader getCharacterStream(String columnLabel) throws SQLException {
         return resultSet.getCharacterStream(columnLabel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public BigDecimal getBigDecimal(int columnIndex) throws SQLException {
-        return resultSet.getBigDecimal(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public BigDecimal getBigDecimal(String columnLabel) throws SQLException {
-        return resultSet.getBigDecimal(columnLabel);
     }
 
     /**
@@ -554,134 +626,15 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
-    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
-        resultSet.updateBoolean(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateByte(int columnIndex, byte x) throws SQLException {
-        resultSet.updateByte(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateShort(int columnIndex, short x) throws SQLException {
-        resultSet.updateShort(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateInt(int columnIndex, int x) throws SQLException {
-        resultSet.updateInt(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateLong(int columnIndex, long x) throws SQLException {
-        resultSet.updateLong(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateFloat(int columnIndex, float x) throws SQLException {
-        resultSet.updateFloat(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateDouble(int columnIndex, double x) throws SQLException {
-        resultSet.updateDouble(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
-        resultSet.updateBigDecimal(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateString(int columnIndex, String x) throws SQLException {
-        resultSet.updateString(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
-        resultSet.updateBytes(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateDate(int columnIndex, Date x) throws SQLException {
-        resultSet.updateDate(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateTime(int columnIndex, Time x) throws SQLException {
-        resultSet.updateTime(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException {
-        resultSet.updateTimestamp(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException {
-        resultSet.updateAsciiStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException {
-        resultSet.updateBinaryStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateCharacterStream(int columnIndex, Reader x, int length) throws SQLException {
-        resultSet.updateCharacterStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateObject(int columnIndex, Object x, int scaleOrLength) throws SQLException {
-        resultSet.updateObject(columnIndex, x, scaleOrLength);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateObject(int columnIndex, Object x) throws SQLException {
-        resultSet.updateObject(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void updateNull(String columnLabel) throws SQLException {
         resultSet.updateNull(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBoolean(int columnIndex, boolean x) throws SQLException {
+        resultSet.updateBoolean(columnIndex, x);
     }
 
     /**
@@ -694,8 +647,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateByte(int columnIndex, byte x) throws SQLException {
+        resultSet.updateByte(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateByte(String columnLabel, byte x) throws SQLException {
         resultSet.updateByte(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateShort(int columnIndex, short x) throws SQLException {
+        resultSet.updateShort(columnIndex, x);
     }
 
     /**
@@ -708,8 +675,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateInt(int columnIndex, int x) throws SQLException {
+        resultSet.updateInt(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateInt(String columnLabel, int x) throws SQLException {
         resultSet.updateInt(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateLong(int columnIndex, long x) throws SQLException {
+        resultSet.updateLong(columnIndex, x);
     }
 
     /**
@@ -722,8 +703,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateFloat(int columnIndex, float x) throws SQLException {
+        resultSet.updateFloat(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateFloat(String columnLabel, float x) throws SQLException {
         resultSet.updateFloat(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateDouble(int columnIndex, double x) throws SQLException {
+        resultSet.updateDouble(columnIndex, x);
     }
 
     /**
@@ -736,8 +731,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateBigDecimal(int columnIndex, BigDecimal x) throws SQLException {
+        resultSet.updateBigDecimal(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateBigDecimal(String columnLabel, BigDecimal x) throws SQLException {
         resultSet.updateBigDecimal(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateString(int columnIndex, String x) throws SQLException {
+        resultSet.updateString(columnIndex, x);
     }
 
     /**
@@ -750,8 +759,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateBytes(int columnIndex, byte[] x) throws SQLException {
+        resultSet.updateBytes(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateBytes(String columnLabel, byte[] x) throws SQLException {
         resultSet.updateBytes(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateDate(int columnIndex, Date x) throws SQLException {
+        resultSet.updateDate(columnIndex, x);
     }
 
     /**
@@ -764,8 +787,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateTime(int columnIndex, Time x) throws SQLException {
+        resultSet.updateTime(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateTime(String columnLabel, Time x) throws SQLException {
         resultSet.updateTime(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateTimestamp(int columnIndex, Timestamp x) throws SQLException {
+        resultSet.updateTimestamp(columnIndex, x);
     }
 
     /**
@@ -778,8 +815,50 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateAsciiStream(int columnIndex, InputStream x, int length) throws SQLException {
+        resultSet.updateAsciiStream(columnIndex, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateAsciiStream(String columnLabel, InputStream x, int length) throws SQLException {
         resultSet.updateAsciiStream(columnLabel, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException {
+        resultSet.updateAsciiStream(columnIndex, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
+        resultSet.updateAsciiStream(columnLabel, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
+        resultSet.updateAsciiStream(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
+        resultSet.updateAsciiStream(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBinaryStream(int columnIndex, InputStream x, int length) throws SQLException {
+        resultSet.updateBinaryStream(columnIndex, x, length);
     }
 
     /**
@@ -792,8 +871,71 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException {
+        resultSet.updateBinaryStream(columnIndex, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException {
+        resultSet.updateBinaryStream(columnLabel, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException {
+        resultSet.updateBinaryStream(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
+        resultSet.updateBinaryStream(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateCharacterStream(int columnIndex, Reader x, int length) throws SQLException {
+        resultSet.updateCharacterStream(columnIndex, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateCharacterStream(String columnLabel, Reader reader, int length) throws SQLException {
         resultSet.updateCharacterStream(columnLabel, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
+        resultSet.updateCharacterStream(columnIndex, x, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
+        resultSet.updateCharacterStream(columnLabel, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateCharacterStream(int columnIndex, Reader x) throws SQLException {
+        resultSet.updateCharacterStream(columnIndex, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
+        resultSet.updateCharacterStream(columnLabel, reader);
     }
 
     /**
@@ -808,6 +950,20 @@ public class InfluxResultSet implements ResultSet {
      */
     public void updateObject(String columnLabel, Object x) throws SQLException {
         resultSet.updateObject(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateObject(int columnIndex, Object x, int scaleOrLength) throws SQLException {
+        resultSet.updateObject(columnIndex, x, scaleOrLength);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateObject(int columnIndex, Object x) throws SQLException {
+        resultSet.updateObject(columnIndex, x);
     }
 
     /**
@@ -869,43 +1025,8 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
-    public Object getObject(int columnIndex, Map<String, Class<?>> map) throws SQLException {
-        return resultSet.getObject(columnIndex, map);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Ref getRef(int columnIndex) throws SQLException {
         return resultSet.getRef(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Blob getBlob(int columnIndex) throws SQLException {
-        return resultSet.getBlob(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Clob getClob(int columnIndex) throws SQLException {
-        return resultSet.getClob(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Array getArray(int columnIndex) throws SQLException {
-        return resultSet.getArray(columnIndex);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Object getObject(String columnLabel, Map<String, Class<?>> map) throws SQLException {
-        return resultSet.getObject(columnLabel, map);
     }
 
     /**
@@ -918,8 +1039,22 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Blob getBlob(int columnIndex) throws SQLException {
+        return resultSet.getBlob(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Blob getBlob(String columnLabel) throws SQLException {
         return resultSet.getBlob(columnLabel);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public Clob getClob(int columnIndex) throws SQLException {
+        return resultSet.getClob(columnIndex);
     }
 
     /**
@@ -932,50 +1067,15 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public Array getArray(int columnIndex) throws SQLException {
+        return resultSet.getArray(columnIndex);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Array getArray(String columnLabel) throws SQLException {
         return resultSet.getArray(columnLabel);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Date getDate(int columnIndex, Calendar cal) throws SQLException {
-        return resultSet.getDate(columnIndex, cal);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Date getDate(String columnLabel, Calendar cal) throws SQLException {
-        return resultSet.getDate(columnLabel, cal);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Time getTime(int columnIndex, Calendar cal) throws SQLException {
-        return resultSet.getTime(columnIndex, cal);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Time getTime(String columnLabel, Calendar cal) throws SQLException {
-        return resultSet.getTime(columnLabel, cal);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Timestamp getTimestamp(int columnIndex, Calendar cal) throws SQLException {
-        return resultSet.getTimestamp(columnIndex, cal);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public Timestamp getTimestamp(String columnLabel, Calendar cal) throws SQLException {
-        return resultSet.getTimestamp(columnLabel, cal);
     }
 
     /**
@@ -1023,6 +1123,34 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
+    public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
+        resultSet.updateBlob(columnIndex, inputStream, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException {
+        resultSet.updateBlob(columnLabel, inputStream, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
+        resultSet.updateBlob(columnIndex, inputStream);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
+        resultSet.updateBlob(columnLabel, inputStream);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public void updateClob(int columnIndex, Clob x) throws SQLException {
         resultSet.updateClob(columnIndex, x);
     }
@@ -1032,6 +1160,34 @@ public class InfluxResultSet implements ResultSet {
      */
     public void updateClob(String columnLabel, Clob x) throws SQLException {
         resultSet.updateClob(columnLabel, x);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
+        resultSet.updateClob(columnIndex, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
+        resultSet.updateClob(columnLabel, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateClob(int columnIndex, Reader reader) throws SQLException {
+        resultSet.updateClob(columnIndex, reader);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateClob(String columnLabel, Reader reader) throws SQLException {
+        resultSet.updateClob(columnLabel, reader);
     }
 
     /**
@@ -1093,29 +1249,57 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
-    public void updateNString(int columnIndex, String nString) throws SQLException {
-        resultSet.updateNString(columnIndex, nString);
+    public void updateNString(int columnIndex, String nnString) throws SQLException {
+        resultSet.updateNString(columnIndex, nnString);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void updateNString(String columnLabel, String nString) throws SQLException {
-        resultSet.updateNString(columnLabel, nString);
+    public void updateNString(String columnLabel, String nnString) throws SQLException {
+        resultSet.updateNString(columnLabel, nnString);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void updateNClob(int columnIndex, NClob nClob) throws SQLException {
-        resultSet.updateNClob(columnIndex, nClob);
+    public void updateNClob(int columnIndex, NClob nnClob) throws SQLException {
+        resultSet.updateNClob(columnIndex, nnClob);
     }
 
     /**
      * {@inheritDoc}
      */
-    public void updateNClob(String columnLabel, NClob nClob) throws SQLException {
-        resultSet.updateNClob(columnLabel, nClob);
+    public void updateNClob(String columnLabel, NClob nnClob) throws SQLException {
+        resultSet.updateNClob(columnLabel, nnClob);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateNClob(String columnLabel, Reader reader) throws SQLException {
+        resultSet.updateNClob(columnLabel, reader);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
+        resultSet.updateNClob(columnIndex, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
+        resultSet.updateNClob(columnLabel, reader, length);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void updateNClob(int columnIndex, Reader reader) throws SQLException {
+        resultSet.updateNClob(columnIndex, reader);
     }
 
     /**
@@ -1205,90 +1389,6 @@ public class InfluxResultSet implements ResultSet {
     /**
      * {@inheritDoc}
      */
-    public void updateAsciiStream(int columnIndex, InputStream x, long length) throws SQLException {
-        resultSet.updateAsciiStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBinaryStream(int columnIndex, InputStream x, long length) throws SQLException {
-        resultSet.updateBinaryStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateCharacterStream(int columnIndex, Reader x, long length) throws SQLException {
-        resultSet.updateCharacterStream(columnIndex, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateAsciiStream(String columnLabel, InputStream x, long length) throws SQLException {
-        resultSet.updateAsciiStream(columnLabel, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBinaryStream(String columnLabel, InputStream x, long length) throws SQLException {
-        resultSet.updateBinaryStream(columnLabel, x, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateCharacterStream(String columnLabel, Reader reader, long length) throws SQLException {
-        resultSet.updateCharacterStream(columnLabel, reader, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBlob(int columnIndex, InputStream inputStream, long length) throws SQLException {
-        resultSet.updateBlob(columnIndex, inputStream, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBlob(String columnLabel, InputStream inputStream, long length) throws SQLException {
-        resultSet.updateBlob(columnLabel, inputStream, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateClob(int columnIndex, Reader reader, long length) throws SQLException {
-        resultSet.updateClob(columnIndex, reader, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateClob(String columnLabel, Reader reader, long length) throws SQLException {
-        resultSet.updateClob(columnLabel, reader, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateNClob(int columnIndex, Reader reader, long length) throws SQLException {
-        resultSet.updateNClob(columnIndex, reader, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateNClob(String columnLabel, Reader reader, long length) throws SQLException {
-        resultSet.updateNClob(columnLabel, reader, length);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void updateNCharacterStream(int columnIndex, Reader x) throws SQLException {
         resultSet.updateNCharacterStream(columnIndex, x);
     }
@@ -1302,107 +1402,9 @@ public class InfluxResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
-     */
-    public void updateAsciiStream(int columnIndex, InputStream x) throws SQLException {
-        resultSet.updateAsciiStream(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBinaryStream(int columnIndex, InputStream x) throws SQLException {
-        resultSet.updateBinaryStream(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateCharacterStream(int columnIndex, Reader x) throws SQLException {
-        resultSet.updateCharacterStream(columnIndex, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateAsciiStream(String columnLabel, InputStream x) throws SQLException {
-        resultSet.updateAsciiStream(columnLabel, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBinaryStream(String columnLabel, InputStream x) throws SQLException {
-        resultSet.updateBinaryStream(columnLabel, x);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateCharacterStream(String columnLabel, Reader reader) throws SQLException {
-        resultSet.updateCharacterStream(columnLabel, reader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBlob(int columnIndex, InputStream inputStream) throws SQLException {
-        resultSet.updateBlob(columnIndex, inputStream);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateBlob(String columnLabel, InputStream inputStream) throws SQLException {
-        resultSet.updateBlob(columnLabel, inputStream);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateClob(int columnIndex, Reader reader) throws SQLException {
-        resultSet.updateClob(columnIndex, reader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateClob(String columnLabel, Reader reader) throws SQLException {
-        resultSet.updateClob(columnLabel, reader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateNClob(int columnIndex, Reader reader) throws SQLException {
-        resultSet.updateNClob(columnIndex, reader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public void updateNClob(String columnLabel, Reader reader) throws SQLException {
-        resultSet.updateNClob(columnLabel, reader);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
-        return resultSet.getObject(columnIndex, type);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
-        return resultSet.getObject(columnLabel, type);
-    }
-
-
-    /**
-     * {@inheritDoc}
-     *
+     * <p>
      * This is provided only because {@link java.sql.ResultSet} requires that it exist.
+     * </p>
      */
     @Deprecated
     public InputStream getUnicodeStream(int columnIndex) throws SQLException {
@@ -1411,15 +1413,49 @@ public class InfluxResultSet implements ResultSet {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * This is provided only because {@link java.sql.ResultSet} requires that it exist.
+     * </p>
      */
     @Deprecated
     public InputStream getUnicodeStream(String columnLabel) throws SQLException {
         return resultSet.getUnicodeStream(columnLabel);
     }
 
-    public <T> T fetchEntity(final T entity) throws SQLException {
+    /**
+     * Get a single entity from the database using the specified class type, query, and arguments.
+     *
+     * @param clazz The class type of the instance which should be returned
+     * @param <T> The generic type of the specified class type
+     *
+     * @return Null or an instance of the specified class type
+     * @throws SQLException Thrown if something goes wrong
+     */
+    public <T> T getEntity(final Class<T> clazz) throws SQLException {
+        try {
+
+            T entity = clazz.getDeclaredConstructor().newInstance();
+            return getEntity(entity);
+        } catch (InstantiationException e) {
+            throw new SQLException("Cannot instantiate entity: " + clazz.getCanonicalName(), e);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            throw new SQLException("Failed to invoke no-argument constructor of entity: "
+                    + clazz.getCanonicalName(), e);
+        } catch (NoSuchMethodException e) {
+            throw new SQLException("Entity does not have a no-argument constructor: " + clazz.getCanonicalName(), e);
+        }
+    }
+
+    /**
+     * Get a single entity from the database using the specified class type, query, and arguments.
+     *
+     * @param entity The class instance which should be populated with data
+     * @param <T> The generic type of the specified class type
+     *
+     * @return Null or an instance of the specified class type
+     * @throws SQLException Thrown if something goes wrong
+     */
+    public <T> T getEntity(final T entity) throws SQLException {
         try {
             int columnCount = getColumnCount();
 
@@ -1434,7 +1470,7 @@ public class InfluxResultSet implements ResultSet {
 
                 // Perform automatic type conversions, where possible
                 if (argumentType.equals(Long.class) && value instanceof Integer) {
-                    value = Long.valueOf((Integer)value);
+                    value = Long.valueOf((Integer) value);
                 }
                 if (argumentType.equals(java.util.Date.class) && value instanceof java.sql.Timestamp) {
                     value = new java.util.Date(((java.sql.Timestamp) value).getTime());
@@ -1445,7 +1481,8 @@ public class InfluxResultSet implements ResultSet {
             }
 
             return entity;
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | ClassNotFoundException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException
+                 | ClassNotFoundException e) {
             throw new SQLException("Cannot invoke setter: ", e);
         }
     }
@@ -1453,15 +1490,18 @@ public class InfluxResultSet implements ResultSet {
     /**
      * This method attempts to locate the appropriate setter method within the specified object based
      * on the column name and data type which was returned by the database.
+     *
      * @param entity The entity in which we are looking for a setter method
      * @param columnName the column name of the data for which we are trying to find a setter method
      * @param columnTypeName the name of the data type which was returned by the database
+     *
      * @return An instance of @{link org.voidzero.influx.jdbc.SetterMethod()} or null if a setter cannot be found
      * @throws ClassNotFoundException thrown when something exceptional happens
      * @throws NoSuchMethodException thrown when something exceptional happens
      * @throws SQLException thrown when something exceptional happens
      */
-    protected static Method findSetter(final Object entity, final String columnName, final String columnTypeName) throws ClassNotFoundException, NoSuchMethodException, SQLException {
+    protected static Method findSetter(final Object entity, final String columnName, final String columnTypeName)
+            throws ClassNotFoundException, NoSuchMethodException, SQLException {
         Class<?> columnClass = Class.forName(columnTypeName);
         Class<?> entityClass = entity.getClass();
 
@@ -1509,20 +1549,12 @@ public class InfluxResultSet implements ResultSet {
         return setterMethod;
     }
 
-    public <T> T fetchEntity(final Class<T> clazz) throws SQLException {
-        try {
-
-            T entity = clazz.getDeclaredConstructor().newInstance();
-            return fetchEntity(entity);
-        } catch (InstantiationException e) {
-            throw new SQLException("Cannot instantiate entity: " + clazz.getCanonicalName(), e);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new SQLException("Failed to invoke no-argument constructor of entity: " + clazz.getCanonicalName(), e);
-        } catch (NoSuchMethodException e) {
-            throw new SQLException("Entity does not have a no-argument constructor: " + clazz.getCanonicalName(), e);
-        }
-    }
-
+    /**
+     * Return a {@link StringBuilder} containing data from the result set in CSV format.
+     *
+     * @return All data from the result set in CSV format
+     * @throws SQLException Thrown if something goes wrong
+     */
     public StringBuilder toCsv() throws SQLException {
         StringBuilder csv = new StringBuilder();
         ResultSetMetaData metaData = getMetaData();
@@ -1559,13 +1591,18 @@ public class InfluxResultSet implements ResultSet {
      * @return The escaped value.
      */
     protected String escapeCsv(String value) {
-        if (value == null) return "";
+        if (value == null) {
+            return "";
+        }
+
         // Escape double quotes by doubling them
         value = value.replace("\"", "\"\"");
+
         // Enclose in quotes if it contains a comma, newline, or quote
         if (value.contains(",") || value.contains("\n") || value.contains("\"")) {
             value = "\"" + value + "\"";
         }
+
         return value;
     }
 }

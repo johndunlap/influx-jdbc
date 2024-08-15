@@ -27,21 +27,20 @@ package org.voidzero.influx.jdbc;
  */
 
 
-import javax.sql.DataSource;
 import java.io.InputStream;
 import java.io.Reader;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.Ref;
 import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
+import java.sql.Ref;
 import java.sql.SQLClientInfoException;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
@@ -60,6 +59,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.concurrent.Executor;
+import javax.sql.DataSource;
 
 /**
  * This object implements {@link java.sql.Connection} by accepting a reference to an instance which implements
@@ -73,7 +73,7 @@ import java.util.concurrent.Executor;
  */
 public class InfluxConnection implements Connection {
     /**
-     * The connection which should be used to interact with the database
+     * The connection which should be used to interact with the database.
      */
     private final Connection connection;
 
@@ -84,7 +84,7 @@ public class InfluxConnection implements Connection {
      * ALWAYS know if you are within a transaction or not. If you know that,
      * then you do not need access to this value. If you don't know
      * that, then there is a serious problem with your application which needs
-     * to be corrected. In either case,
+     * to be corrected.
      */
     private boolean transactionActive = false;
 
@@ -102,16 +102,19 @@ public class InfluxConnection implements Connection {
 
     /**
      * Construct an instance of this class and use the provided {@link javax.sql.DataSource} to obtain
-     * a {@link java.sql.Connection}
+     * a {@link java.sql.Connection}.
+     *
      * @param dataSource the datasource which should be used to obtain a database connection
-     * @throws SQLException throw when something exceptional happens
+     *
+     * @throws SQLException Thrown if something goes wrong
      */
     public InfluxConnection(final DataSource dataSource) throws SQLException {
         this.connection = dataSource.getConnection();
     }
 
     /**
-     * Construct an instance of this class with the provided {@link java.sql.Connection} object
+     * Construct an instance of this class with the provided {@link java.sql.Connection} object.
+     *
      * @param connection the connection object which should be used to access the database
      */
     public InfluxConnection(final Connection connection) {
@@ -120,8 +123,10 @@ public class InfluxConnection implements Connection {
 
     /**
      * This must be implemented by a child class so that the child class can control which child class of
-     * {@link InfluxResultSet} is returned
+     * {@link InfluxResultSet} is returned.
+     *
      * @param statement the statement which should be used to obtain the resultset
+     *
      * @return reference to the resultset
      * @throws SQLException thrown when something exceptional happens
      */
@@ -131,22 +136,26 @@ public class InfluxConnection implements Connection {
 
     /**
      * Fetches a {@link InfluxResultSet} from the provided sql and arguments.
+     *
      * @param sql the sql query which should be executed
      * @param arguments the arguments which should be bound to the query
+     *
      * @return a reference to an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
     public InfluxResultSet get(final String sql, final Object... arguments) throws SQLException {
-        try(PreparedStatement statement = prepareStatement(sql)) {
+        try (PreparedStatement statement = prepareStatement(sql)) {
             return get(statement, arguments);
         }
     }
 
     /**
      * Bind the provided arguments to the provided statement, execute the statement, and return an instance of
-     * {@link InfluxResultSet}
+     * {@link InfluxResultSet}.
+     *
      * @param statement the statement which should be executed
      * @param arguments the arguments which should be bound to the query
+     *
      * @return an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
@@ -158,13 +167,35 @@ public class InfluxConnection implements Connection {
         return get(statement);
     }
 
+    /**
+     * Get data from the database.
+     *
+     * @param handler The handler which should handle the data
+     * @param sql The query which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the query
+     * @param <T> The generic type of the handler
+     *
+     * @return The result of the handler
+     * @throws SQLException Thrown when something goes wrong
+     */
     public <T> T get(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments)
             throws SQLException {
-        try(PreparedStatement statement = prepareCall(sql)) {
+        try (PreparedStatement statement = prepareCall(sql)) {
             return get(handler, statement, arguments);
         }
     }
 
+    /**
+     * Get data from the database.
+     *
+     * @param handler The handler which should handle the data
+     * @param statement The prepared statement which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the prepared statement
+     * @param <T> The generic type of the handler
+     *
+     * @return The result of the handler
+     * @throws SQLException Thrown when something goes wrong
+     */
     public <T> T get(final InfluxResultSetHandler<T> handler, final PreparedStatement statement,
                      final Object ... arguments) throws SQLException {
         try (InfluxResultSet resultSet = get(statement, arguments)) {
@@ -177,12 +208,30 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Return a list of {@link Integer} values.
+     *
+     * @param sql The query which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the prepared statement
+     *
+     * @return A list containing zero or more {@link Integer} values
+     * @throws SQLException Thrown if something goes wrong
+     */
     public List<Integer> getIntegerList(final String sql, final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return getIntegerList(statement, arguments);
         }
     }
 
+    /**
+     * Return a list of {@link Integer} values.
+     *
+     * @param statement The prepared statement which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the prepared statement
+     *
+     * @return A list containing zero or more {@link Integer} values
+     * @throws SQLException Thrown if something goes wrong
+     */
     public List<Integer> getIntegerList(final PreparedStatement statement, final Object... arguments)
             throws SQLException {
         List<Integer> list = get(resultSet -> {
@@ -204,12 +253,30 @@ public class InfluxConnection implements Connection {
         return list;
     }
 
+    /**
+     * Return a list of {@link Long} values.
+     *
+     * @param sql The query which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the prepared statement
+     *
+     * @return A list containing zero or more {@link Long} values
+     * @throws SQLException Thrown if something goes wrong
+     */
     public List<Long> getLongList(final String sql, final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return getLongList(statement, arguments);
         }
     }
 
+    /**
+     * Return a list of {@link Long} values.
+     *
+     * @param statement The prepared statement which should be used to obtain data from the database
+     * @param arguments The arguments which should be passed to the prepared statement
+     *
+     * @return A list containing zero or more {@link Long} values
+     * @throws SQLException Thrown if something goes wrong
+     */
     public List<Long> getLongList(final PreparedStatement statement, final Object... arguments) throws SQLException {
         List<Long> list = get(resultSet -> {
             List<Long> integerList = new ArrayList<>();
@@ -231,22 +298,26 @@ public class InfluxConnection implements Connection {
     }
 
     /**
-     * Exceutes the procided statement
+     * Executes the procided statement.
+     *
      * @param statement the statement which should be executed
-     * @return true if the statement contains a resultset and false otherwise
-     * @throws SQLException thrown if something exceptional happens
+     *
+     * @return true if the statement contains a result set and false otherwise
+     * @throws SQLException Thrown if something goes wrong
      */
     public boolean execute(final PreparedStatement statement) throws SQLException {
         return statement.execute();
     }
 
     /**
-     * Binds the provided arguments to the provided sql query, executes the query
+     * Binds the provided arguments to the provided sql query, executes the query.
+     *
      * @param sql the sql which should be executed
      * @param arguments the arguments which should be bound to the query
-     * @return true if the query returns a resultset and false otherwise. If true is returned and you need access to the
-     * resultset, use the <i>execute(PreparedStatement, Object...)</i> or <i>fetch(PreparedStatement, Object...)</i>
-     * methods instead
+     *
+     * @return true if the query returns a resultset and false otherwise. If true is returned, and you need access to
+     *     the result set, use the <i>execute(PreparedStatement, Object...)</i> or <i>fetch(PreparedStatement,
+     *     Object...)</i> methods instead
      * @throws SQLException thrown when something exceptional happens
      */
     public boolean execute(final String sql, final Object... arguments) throws SQLException {
@@ -257,8 +328,10 @@ public class InfluxConnection implements Connection {
 
     /**
      * Binds the provided arguments to the provided statement and executes the statement.
+     *
      * @param statement the statement which should be executed
      * @param arguments the arguments which should be bound to the statement
+     *
      * @return true if a resultset is available and false otherwise
      * @throws SQLException thrown when something exceptional happens
      */
@@ -269,10 +342,12 @@ public class InfluxConnection implements Connection {
     /**
      * Returns a list of entities which are instances of the specified class and which have been populated by the
      * provided sql and arguments.
+     *
      * @param clazz the class type of the entities which should be returned
      * @param sql the sql which should be used to obtain data from the database
      * @param arguments the arguments which should be bound to the query
      * @param <T> the generic type of the entities which should be returned
+     *
      * @return a list of entities which have the results of the query injected into them
      * @throws SQLException thrown when something exceptional happens
      */
@@ -283,6 +358,18 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Returns a list of entities which are instances of the specified class and which have been populated by the
+     * provided sql and arguments.
+     *
+     * @param clazz the class type of the entities which should be returned
+     * @param statement the prepared statement which should be used to obtain data from the database
+     * @param arguments the arguments which should be bound to the query
+     * @param <T> the generic type of the entities which should be returned
+     *
+     * @return a list of entities which have the results of the query injected into them
+     * @throws SQLException thrown when something exceptional happens
+     */
     public <T> List<T> getEntityList(final Class<T> clazz, final PreparedStatement statement,
                                      final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
@@ -294,13 +381,27 @@ public class InfluxConnection implements Connection {
 
             // Iterate over the results
             while (resultSet.next()) {
-                entities.add(resultSet.fetchEntity(clazz));
+                entities.add(resultSet.getEntity(clazz));
             }
 
             return entities;
         }
     }
 
+    /**
+     * Get multiple records from the database and create a map with one entry per record. The map key is the value of
+     * the specified column, and the value is an entity of the specified type which is populated with by the entire
+     * record.
+     *
+     * @param clazz The class type of the entities which should be returned
+     * @param columnLabel The column label which should be used to find the map key
+     * @param sql The query which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     * @param <T> The generic type of the entities which should be returned
+     *
+     * @return A map with zero or more entries
+     * @throws SQLException Thrown if something goes wrong
+     */
     public <T> Map<String, T> getEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
                                            final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
@@ -308,6 +409,20 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Get multiple records from the database and create a map with one entry per record. The map key is the value of
+     * the specified column, and the value is an entity of the specified type which is populated with by the entire
+     * record.
+     *
+     * @param clazz The class type of the entities which should be returned
+     * @param columnLabel The column label which should be used to find the map key
+     * @param statement The prepared statement which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     * @param <T> The generic type of the entities which should be returned
+     *
+     * @return A map with zero or more entries
+     * @throws SQLException Thrown if something goes wrong
+     */
     public <T> Map<String, T> getEntityMap(final Class<T> clazz, final String columnLabel,
                                            final PreparedStatement statement, final Object... arguments)
             throws SQLException {
@@ -320,19 +435,37 @@ public class InfluxConnection implements Connection {
 
             // Iterate over the results
             while (resultSet.next()) {
-                entities.put(resultSet.getStringByName(columnLabel), resultSet.fetchEntity(clazz));
+                entities.put(resultSet.getStringByName(columnLabel), resultSet.getEntity(clazz));
             }
 
             return entities;
         }
     }
 
+    /**
+     * Get multiple rows from the database and return a list of maps.
+     *
+     * @param sql The query which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     *
+     * @return A list containing zero or more maps
+     * @throws SQLException Thrown when something goes wrong
+     */
     public List<Map<String, Object>> getListMap(final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return getListMap(statement, arguments);
         }
     }
 
+    /**
+     * Get multiple rows from the database and return a list of maps.
+     *
+     * @param statement The prepared statement which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     *
+     * @return A list containing zero or more maps
+     * @throws SQLException Thrown when something goes wrong
+     */
     public List<Map<String, Object>> getListMap(final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
@@ -343,7 +476,7 @@ public class InfluxConnection implements Connection {
             List<Map<String, Object>> entities = new ArrayList<>();
 
             // Iterate over the results
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 entities.add(getMap(resultSet));
             }
 
@@ -352,12 +485,34 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Get a single entity from the database using the specified class type, query, and arguments.
+     *
+     * @param entity The class instance which should be populated with data
+     * @param sql The query which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query.
+     * @param <T> The generic type of the specified class type
+     *
+     * @return Null or an instance of the specified class type
+     * @throws SQLException Thrown if something goes wrong
+     */
     public <T> T getEntity(final T entity, final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return getEntity(entity, statement, arguments);
         }
     }
 
+    /**
+     * Get a single entity from the database using the specified class type, query, and arguments.
+     *
+     * @param entity The class instance which should be populated with data
+     * @param statement The prepared statement which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query.
+     * @param <T> The generic type of the specified class type
+     *
+     * @return Null or an instance of the specified class type
+     * @throws SQLException Thrown if something goes wrong
+     */
     public <T> T getEntity(final T entity, final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
@@ -368,13 +523,13 @@ public class InfluxConnection implements Connection {
             int count = 0;
 
             // Iterate over the results
-            while(resultSet.next()) {
+            while (resultSet.next()) {
                 if (count > 0) {
                     throw new SQLException("Encountered a second record where a single record was expected");
                 }
 
                 // Populate the entity
-                resultSet.fetchEntity(entity);
+                resultSet.getEntity(entity);
                 count++;
             }
 
@@ -382,6 +537,17 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Get a single entity from the database using the specified class type, query, and arguments.
+     *
+     * @param clazz The class type which should be returned
+     * @param sql The query which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query.
+     * @param <T> The generic type of the specified class type
+     *
+     * @return Null or an instance of the specified class type
+     * @throws SQLException Thrown if something goes wrong
+     */
     public <T> T getEntity(final Class<T> clazz, final String sql, final Object ... arguments) throws SQLException {
         try {
             T entity = clazz.getDeclaredConstructor().newInstance();
@@ -395,12 +561,30 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Gets a single row from the database, converts it to a map, and returns it.
+     *
+     * @param sql The query which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     *
+     * @return Null or a map
+     * @throws SQLException Thrown when something goes wrong
+     */
     public Map<String, Object> getMap(final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
             return getMap(statement, arguments);
         }
     }
 
+    /**
+     * Gets a single row from the database, converts it to a map, and returns it.
+     *
+     * @param statement The prepared statement which should be used to get data from the database
+     * @param arguments The arguments which should be passed to the query
+     *
+     * @return Null or a map
+     * @throws SQLException Thrown when something goes wrong
+     */
     public Map<String, Object> getMap(final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
@@ -426,6 +610,14 @@ public class InfluxConnection implements Connection {
         }
     }
 
+    /**
+     * Gets a single row from the database, converts it to a map, and returns it.
+     *
+     * @param resultSet The result set which should be converted to a map
+     *
+     * @return Null or a map
+     * @throws SQLException Thrown when something goes wrong
+     */
     protected Map<String, Object> getMap(final InfluxResultSet resultSet) throws SQLException {
         Map<String, Object> entity = new HashMap<>();
 
@@ -753,7 +945,7 @@ public class InfluxConnection implements Connection {
     }
 
     /**
-     * Fetches a single boolean from the database
+     * Fetches a single boolean from the database.
      *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
@@ -1125,9 +1317,11 @@ public class InfluxConnection implements Connection {
     }
 
     /**
-     * Prepares the specified sql statement for execution and bind the provided arguments to it
+     * Prepares the specified sql statement for execution and bind the provided arguments to it.
+     *
      * @param sql the sql which should be prepared
      * @param arguments the arguments which should be bound to the statement
+     *
      * @return a reference to the prepared statement after the arguments have been bound to it
      * @throws SQLException thrown when something exceptional happens
      */
@@ -1195,7 +1389,7 @@ public class InfluxConnection implements Connection {
      * {@inheritDoc}
      */
     public void setClientInfo(Properties properties) throws SQLClientInfoException {
-       this.connection.setClientInfo(properties);
+        this.connection.setClientInfo(properties);
     }
 
     /**
@@ -1342,7 +1536,9 @@ public class InfluxConnection implements Connection {
 
     /**
      * Create a new query builder for the specified query.
+     *
      * @param sql The query which should be executed
+     *
      * @return An instance of {@link QueryBuilder}
      * @throws SQLException Thrown when something goes wrong.
      */
@@ -1371,8 +1567,8 @@ public class InfluxConnection implements Connection {
         }
 
         /**
-         * Attempts to bind a single database record to an object of the specified type. If a record is found, the result
-         * set is bound to an object of the specified type and returned. Otherwise, null is returned.
+         * Attempts to bind a single database record to an object of the specified type. If a record is found, the
+         * result set is bound to an object of the specified type and returned. Otherwise, null is returned.
          *
          * @param clazz The type of the object which should be bound to the database record.
          * @param <T> The generic type of the specified class type.
@@ -1385,7 +1581,7 @@ public class InfluxConnection implements Connection {
                 if (!resultSet.next()) {
                     return null;
                 }
-                return resultSet.fetchEntity(clazz);
+                return resultSet.getEntity(clazz);
             }
         }
 
@@ -1479,7 +1675,7 @@ public class InfluxConnection implements Connection {
             }
         }
     }
-/*
+    /*
         SimpleResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException;
 
         <T> T fetch(final ResultSetHandler<T> handler, final String sql, final Object... arguments)
@@ -1576,5 +1772,5 @@ public class InfluxConnection implements Connection {
         Boolean fetchBoolean(final String sql, final Object... args) throws SQLException;
 
         Object fetchObject(final String sql, final Object... args) throws SQLException;
-*/
+    */
 }

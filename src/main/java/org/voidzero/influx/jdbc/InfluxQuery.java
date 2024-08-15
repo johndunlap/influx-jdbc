@@ -102,7 +102,7 @@ public class InfluxQuery {
             if (!resultSet.next()) {
                 return null;
             }
-            return resultSet.fetchEntity(clazz);
+            return resultSet.getEntity(clazz);
         }
     }
 

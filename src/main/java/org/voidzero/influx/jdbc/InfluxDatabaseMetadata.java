@@ -29,12 +29,14 @@ package org.voidzero.influx.jdbc;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Delegate class which simplifies the process to obtaining and working with database metadata.
+ */
 public class InfluxDatabaseMetadata implements DatabaseMetaData {
     private final DatabaseMetaData metadata;
 
@@ -654,9 +656,17 @@ public class InfluxDatabaseMetadata implements DatabaseMetaData {
         return getTables(null);
     }
 
+    @Override
+    public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types)
+            throws SQLException {
+        return metadata.getTables(catalog, schemaPattern, tableNamePattern, types);
+    }
+
     /**
      * Get all tables from the specified schema, or from all schemas if schema is null.
+     *
      * @param schema The schema from which table metadata should be loaded
+     *
      * @return A list of table metadata objects
      * @throws SQLException throw when something goes wrong
      */
@@ -720,15 +730,15 @@ public class InfluxDatabaseMetadata implements DatabaseMetaData {
 
         return tableMetaData;
     }
-    @Override
-    public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types)
-            throws SQLException {
-        return metadata.getTables(catalog, schemaPattern, tableNamePattern, types);
-    }
 
     @Override
     public ResultSet getSchemas() throws SQLException {
         return metadata.getSchemas();
+    }
+
+    @Override
+    public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
+        return metadata.getSchemas(catalog, schemaPattern);
     }
 
     @Override
@@ -741,6 +751,15 @@ public class InfluxDatabaseMetadata implements DatabaseMetaData {
         return metadata.getTableTypes();
     }
 
+    /**
+     * Get a list of {@link ColumnMetadata} classes which describe the columns of the specified table.
+     *
+     * @param schema The schema in which the table is located
+     * @param table The name of the table from which column metadata should be taken
+     *
+     * @return A list of {@link ColumnMetadata} objects
+     * @throws SQLException Thrown if something goes wrong
+     */
     public List<ColumnMetadata> getColumns(final String schema, final String table) throws SQLException {
         ResultSet columnResultSet = getColumns(null, schema, table, null);
 
@@ -973,11 +992,6 @@ public class InfluxDatabaseMetadata implements DatabaseMetaData {
     @Override
     public RowIdLifetime getRowIdLifetime() throws SQLException {
         return metadata.getRowIdLifetime();
-    }
-
-    @Override
-    public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
-        return metadata.getSchemas(catalog, schemaPattern);
     }
 
     @Override
