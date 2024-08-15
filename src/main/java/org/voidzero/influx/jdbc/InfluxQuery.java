@@ -39,6 +39,8 @@ import java.util.List;
 /**
  * This class provider builder-like semantics for constructing queries using named parameters, which are not
  * directly supported by JDBC.
+ *
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class InfluxQuery {
     /**

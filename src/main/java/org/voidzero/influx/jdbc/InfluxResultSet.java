@@ -54,7 +54,7 @@ import java.util.Map;
 /**
  * Delegate class which simplifies working with result sets.
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class InfluxResultSet implements ResultSet {
     private final ResultSet resultSet;

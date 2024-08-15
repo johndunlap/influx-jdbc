@@ -33,6 +33,8 @@ import java.util.List;
 
 /**
  * This is a wrapper for a result set which contains table metadata.
+ *
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class TableMetadata {
     private String catalog;

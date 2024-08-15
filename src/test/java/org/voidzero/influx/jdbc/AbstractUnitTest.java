@@ -32,7 +32,7 @@ import org.junit.BeforeClass;
 /**
  * The abstract base class for all database tests.
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class AbstractUnitTest {
     protected static InfluxConnection connection = null;

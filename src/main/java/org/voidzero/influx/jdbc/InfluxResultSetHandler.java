@@ -34,7 +34,7 @@ import java.sql.SQLException;
  *
  * @param <T> The generic type of the value which will be returned from the handler
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 @FunctionalInterface
 public interface InfluxResultSetHandler<T> {

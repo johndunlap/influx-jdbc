@@ -38,7 +38,7 @@ import org.junit.Test;
 /**
  * This verifies the transactional behavior of the begin, commit, and rollback methods.
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class TransactionTest extends AbstractUnitTest {
     @Test

@@ -36,6 +36,8 @@ import java.util.List;
 
 /**
  * Delegate class which simplifies the process to obtaining and working with database metadata.
+ *
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class InfluxDatabaseMetadata implements DatabaseMetaData {
     private final DatabaseMetaData metadata;

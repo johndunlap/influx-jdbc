@@ -43,7 +43,7 @@ import org.junit.Test;
 /**
  * This class verifies the behavior of {@link InfluxConnection}.
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class InfluxConnectionTest extends AbstractUnitTest {
     @Test
@@ -367,7 +367,7 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     /**
      * This class is used by the tests above to verify that object binding works correctly.
      *
-     * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+     * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
      */
     private static class User {
         private Long id;

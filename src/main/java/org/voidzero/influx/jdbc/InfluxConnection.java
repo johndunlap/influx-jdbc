@@ -62,14 +62,13 @@ import java.util.concurrent.Executor;
 import javax.sql.DataSource;
 
 /**
- * This object implements {@link java.sql.Connection} by accepting a reference to an instance which implements
- * {@link java.sql.Connection}, during construction, and proxying all methods to their counterparts in that instance.
- * This is necessary because we can't can't extend the object which implements {@link java.sql.Connection} interface
- * because it is provided by the JDBC driver and, as such, will be different between databases. Additional methods which
- * simplify database interaction have been added to this object. Further, it is intended that this object be extended to
- * support vendor specific features, which are not available in all databases.
+ * This is a delegate class which implements {@link java.sql.Connection} by proxying method calls to another
+ * instance of {@link java.sql.Connection}. It is not possible to extend the implementation of
+ * {@link java.sql.Connection} because each JDBC driver implements it separately. Additional methods, which simplify
+ * database interaction, have been added to this object. It is intended that this object be extended to support vendor
+ * specific features, which are not available in all databases.
  *
- * @author <a href="mailto:john.david.dunlap@gmail.com">John D. Dunlap</a>
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class InfluxConnection implements Connection {
     /**

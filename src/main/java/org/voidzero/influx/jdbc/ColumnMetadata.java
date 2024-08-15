@@ -31,6 +31,8 @@ import java.sql.SQLException;
 
 /**
  * This class contains metadata which describes a single database column.
+ *
+ * @author <a href="mailto:john.david.dunlap@gmail.com">John Dunlap</a>
  */
 public class ColumnMetadata {
 
