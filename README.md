@@ -76,7 +76,7 @@ public class Main {
 
         System.out.println("==== FETCH A SINGLE ROW WITH A SINGLE COLUMN ====");
 
-        Long userId = connection.fetchLong(
+        Long userId = connection.getLong(
                 "select id from users where username = ?",
                 username
         );
@@ -85,7 +85,7 @@ public class Main {
 
         System.out.println("\n==== FETCH A SINGLE ROW WITH MULTIPLE COLUMNS ====");
 
-        User user = connection.fetchEntity(
+        User user = connection.getEntity(
                 User.class,
                 "select * from users where id = ?",
                 2
@@ -103,7 +103,7 @@ public class Main {
 
         System.out.println("\n==== FETCH A SINGLE ROW INTO AN EXISTING ENTITY ====");
 
-        connection.fetchEntity(
+        connection.getEntity(
                 user,
                 "select password from users where id = ?",
                 2
@@ -113,7 +113,7 @@ public class Main {
 
         System.out.println("\n==== FETCH MULTIPLE ROWS WITH MULTIPLE COLUMNS ====");
 
-        List<User> users = connection.fetchAllEntity(
+        List<User> users = connection.getEntityList(
                 User.class,
                 "select id, username, password, active, last_active from users"
         );

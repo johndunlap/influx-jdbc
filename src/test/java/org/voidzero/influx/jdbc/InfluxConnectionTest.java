@@ -53,82 +53,82 @@ public class InfluxConnectionTest extends AbstractUnitTest {
 
         // Change the password
         connection.execute("update users set password = ? where username = ?", newPassword, "admin");
-        assertEquals(newPassword, connection.fetchString(
+        assertEquals(newPassword, connection.getString(
                 "select password from users where username = ?", "admin"));
 
         // Change the password back
         connection.execute("update users set password = ? where username = ?", oldPassword, "admin");
-        assertEquals(oldPassword, connection.fetchString(
+        assertEquals(oldPassword, connection.getString(
                 "select password from users where username = ?", "admin"));
     }
 
     @Test
-    public void testFetchStringMethod() throws SQLException {
-        String username = connection.fetchString("select username from users where id = ?", 1);
+    public void testGetStringMethod() throws SQLException {
+        String username = connection.getString("select username from users where id = ?", 1);
         assertEquals(username, "admin");
     }
 
     @Test
-    public void testFetchObjectMethod() throws SQLException {
-        Object object = connection.fetchObject("select username from users where id = ?", 1);
+    public void testGetObjectMethod() throws SQLException {
+        Object object = connection.getObject("select username from users where id = ?", 1);
         assertEquals(String.class, object.getClass());
 
-        object = connection.fetchObject("select id from users where username = ?", "admin");
+        object = connection.getObject("select id from users where username = ?", "admin");
         assertEquals(Integer.class, object.getClass());
     }
 
     @Test
-    public void testFetchIntegerMethod() throws SQLException {
-        Integer id = connection.fetchInt("select id from users where username = ?", "admin");
+    public void testGetGetIntegerMethod() throws SQLException {
+        Integer id = connection.getInteger("select id from users where username = ?", "admin");
         assertEquals(id, Integer.valueOf(1));
     }
 
     @Test
-    public void testFetchLongMethod() throws SQLException {
-        Long id = connection.fetchLong("select id from users where username = ?", "admin");
+    public void testGetLongMethod() throws SQLException {
+        Long id = connection.getLong("select id from users where username = ?", "admin");
         assertEquals(id, Long.valueOf(1));
     }
 
     @Test
-    public void testFetchBooleanMethod() throws SQLException {
-        Boolean active = connection.fetchBoolean("select active from users where username = ?", "admin");
+    public void testGetBooleanMethod() throws SQLException {
+        Boolean active = connection.getBoolean("select active from users where username = ?", "admin");
         assertEquals(active, true);
     }
 
     @Test
-    public void testFetchFloatMethod() throws SQLException {
-        Float balance = connection.fetchFloat("select balance from users where username = ?", "admin");
+    public void testGetFloatMethod() throws SQLException {
+        Float balance = connection.getFloat("select balance from users where username = ?", "admin");
         assertEquals(balance, Float.valueOf(1345.23f));
     }
 
     @Test
-    public void testFetchDoubleMethod() throws SQLException {
-        Double balance = connection.fetchDouble("select balance from users where username = ?", "admin");
+    public void testGetDoubleMethod() throws SQLException {
+        Double balance = connection.getDouble("select balance from users where username = ?", "admin");
         assertEquals(balance, Double.valueOf(1345.23));
     }
 
     @Test
-    public void testFetchBigDecimalMethod() throws SQLException {
-        BigDecimal balance = connection.fetchBigDecimal(
+    public void testGetBigDecimalMethod() throws SQLException {
+        BigDecimal balance = connection.getBigDecimal(
                 "select balance from users where username = ?", "admin");
         assertEquals(Double.valueOf(balance.doubleValue()),
                 Double.valueOf(new BigDecimal("1345.23").doubleValue()));
     }
 
     @Test
-    public void testFetchDateMethod() throws ParseException, SQLException {
+    public void testGetDateMethod() throws ParseException, SQLException {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date lastActive = connection.fetchDate("select last_active from users where username = ?", "admin");
+        Date lastActive = connection.getDate("select last_active from users where username = ?", "admin");
         assertEquals(lastActive, formatter.parse("1970-01-01 00:00:00"));
     }
 
     @Test
-    public void testFetchEntityMethod() throws ParseException, SQLException {
+    public void testGetEntityMethod() throws ParseException, SQLException {
         String sql = "select id, username, password, active, last_active, balance from users where id = ?";
 
         User user = connection.query(sql)
                 .addParam(1)
-                .fetchEntity(User.class);
+                .getEntity(User.class);
 
         assertEquals(user.getId(), Long.valueOf(1));
         assertEquals(user.getUsername(), "admin");
@@ -140,7 +140,7 @@ public class InfluxConnectionTest extends AbstractUnitTest {
                 Double.valueOf(new BigDecimal("1345.23").doubleValue()));
 
         // Now attempt to override a value in the entity
-        connection.fetchEntity(
+        connection.getEntity(
             user,
             "select password from users where id = ?",
             2
@@ -158,8 +158,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchMapMethod() throws ParseException, SQLException {
-        Map<String, Object> user = connection.fetchMap(
+    public void testGetGetListGetMapMethod() throws ParseException, SQLException {
+        Map<String, Object> user = connection.getMap(
             "select id, username, password, active, last_active, balance from users where id = ?",
             1
         );
@@ -178,8 +178,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchListIntegerMethod() throws SQLException {
-        List<Integer> list = connection.fetchListInteger(
+    public void testGetGetIntegerListMethod() throws SQLException {
+        List<Integer> list = connection.getIntegerList(
             "select id from users order by id asc"
         );
 
@@ -189,8 +189,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchLongMethodWithQueryWhichReturnsNothing() throws SQLException {
-        Long l = connection.fetchLong(
+    public void testGetLongMethodWithQueryWhichReturnsNothing() throws SQLException {
+        Long l = connection.getLong(
             "select id from users where username = ?",
             "999999"
         );
@@ -199,8 +199,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchListLongMethod() throws SQLException {
-        List<Long> list = connection.fetchListLong(
+    public void testGetLongListMethod() throws SQLException {
+        List<Long> list = connection.getLongList(
             "select id from users order by id asc"
         );
 
@@ -210,8 +210,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchListLongMethodWithQueryWhichReturnsNothing() throws SQLException {
-        List<Long> list = connection.fetchListLong(
+    public void testGetLongListMethodWithQueryWhichReturnsNothing() throws SQLException {
+        List<Long> list = connection.getLongList(
             "select id from users where id < 0 order by id asc"
         );
 
@@ -220,8 +220,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchListIntegerMethodWithQueryWhichReturnsNothing() throws SQLException {
-        List<Integer> list = connection.fetchListInteger(
+    public void testGetGetIntegerListMethodWithQueryWhichReturnsNothing() throws SQLException {
+        List<Integer> list = connection.getIntegerList(
             "select id from users where id < 0 order by id asc"
         );
 
@@ -230,8 +230,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchAllMapMethod() throws ParseException, SQLException {
-        List<Map<String, Object>> users = connection.fetchAllMap(
+    public void testGetListGetMapMethod() throws ParseException, SQLException {
+        List<Map<String, Object>> users = connection.getListMap(
             "select id, username, password, active, last_active, balance from users order by id asc"
         );
 
@@ -260,8 +260,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchAllEntityMethod() throws ParseException, SQLException {
-        List<User> users = connection.fetchAllEntity(
+    public void testGetGetEntityListMethod() throws ParseException, SQLException {
+        List<User> users = connection.getEntityList(
             User.class,
             "select id, username, password, active, last_active, balance from users order by id asc"
         );
@@ -289,8 +289,8 @@ public class InfluxConnectionTest extends AbstractUnitTest {
     }
 
     @Test
-    public void testFetchAllEntityMap() throws ParseException, SQLException {
-        Map<String, User> users = connection.fetchAllEntityMap(
+    public void testGetGetEntityListGetListGetMap() throws ParseException, SQLException {
+        Map<String, User> users = connection.getEntityMap(
             User.class,
             "username",
             "select id, username, password, active, last_active, balance from users order by id asc"
@@ -360,7 +360,7 @@ public class InfluxConnectionTest extends AbstractUnitTest {
         String expected = "ID,USERNAME,PASSWORD,ACTIVE,LAST_ACTIVE,BALANCE\n"
                 + "1,admin,password,TRUE,1970-01-01 00:00:00.000000,1345.23\n"
                 + "2,bob.wiley,password2,TRUE,1973-02-02 00:00:00.000000,564.77\n";
-        InfluxResultSet resultSet = connection.fetch(sql);
+        InfluxResultSet resultSet = connection.get(sql);
         assertEquals(expected, resultSet.toCsv().toString());
     }
 

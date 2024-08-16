@@ -119,24 +119,13 @@ public class InfluxConnection implements Connection {
     }
 
     /**
-     * Prepares the specified sql statement for execution and bind the provided arguments to it
-     * @param sql the sql which should be prepared
-     * @param arguments the arguments which should be bound to the statement
-     * @return a reference to the prepared statement after the arguments have been bound to it
-     * @throws SQLException thrown when something exceptional happens
-     */
-    public PreparedStatement prepareStatement(final String sql, final Object... arguments) throws SQLException {
-        return bindArguments(connection.prepareStatement(sql), arguments);
-    }
-
-    /**
      * This must be implemented by a child class so that the child class can control which child class of
      * {@link InfluxResultSet} is returned
      * @param statement the statement which should be used to obtain the resultset
      * @return reference to the resultset
      * @throws SQLException thrown when something exceptional happens
      */
-    protected InfluxResultSet fetch(final PreparedStatement statement) throws SQLException {
+    protected InfluxResultSet get(final PreparedStatement statement) throws SQLException {
         return new InfluxResultSet(statement.executeQuery());
     }
 
@@ -147,9 +136,9 @@ public class InfluxConnection implements Connection {
      * @return a reference to an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
-    public InfluxResultSet fetch(final String sql, final Object... arguments) throws SQLException {
+    public InfluxResultSet get(final String sql, final Object... arguments) throws SQLException {
         try(PreparedStatement statement = prepareStatement(sql)) {
-            return fetch(statement, arguments);
+            return get(statement, arguments);
         }
     }
 
@@ -161,24 +150,24 @@ public class InfluxConnection implements Connection {
      * @return an instance of {@link InfluxResultSet} which contains the results of the query
      * @throws SQLException thrown when something exceptional happens
      */
-    public InfluxResultSet fetch(final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public InfluxResultSet get(final PreparedStatement statement, final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        return fetch(statement);
+        return get(statement);
     }
 
-    public <T> T fetch(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments)
+    public <T> T get(final InfluxResultSetHandler<T> handler, final String sql, final Object ... arguments)
             throws SQLException {
         try(PreparedStatement statement = prepareCall(sql)) {
-            return fetch(handler, statement, arguments);
+            return get(handler, statement, arguments);
         }
     }
 
-    public <T> T fetch(final InfluxResultSetHandler<T> handler, final PreparedStatement statement,
-                       final Object ... arguments) throws SQLException {
-        try (InfluxResultSet resultSet = fetch(statement, arguments)) {
+    public <T> T get(final InfluxResultSetHandler<T> handler, final PreparedStatement statement,
+                     final Object ... arguments) throws SQLException {
+        try (InfluxResultSet resultSet = get(statement, arguments)) {
             // Return null if there is no data
             if (!resultSet.next()) {
                 return null;
@@ -188,15 +177,15 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public List<Integer> fetchListInteger(final String sql, final Object... arguments) throws SQLException {
+    public List<Integer> getIntegerList(final String sql, final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchListInteger(statement, arguments);
+            return getIntegerList(statement, arguments);
         }
     }
 
-    public List<Integer> fetchListInteger(final PreparedStatement statement, final Object... arguments)
+    public List<Integer> getIntegerList(final PreparedStatement statement, final Object... arguments)
             throws SQLException {
-        List<Integer> list = fetch(resultSet -> {
+        List<Integer> list = get(resultSet -> {
             List<Integer> integerList = new ArrayList<>();
 
             do {
@@ -215,14 +204,14 @@ public class InfluxConnection implements Connection {
         return list;
     }
 
-    public List<Long> fetchListLong(final String sql, final Object... arguments) throws SQLException {
+    public List<Long> getLongList(final String sql, final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchListLong(statement, arguments);
+            return getLongList(statement, arguments);
         }
     }
 
-    public List<Long> fetchListLong(final PreparedStatement statement, final Object... arguments) throws SQLException {
-        List<Long> list = fetch(resultSet -> {
+    public List<Long> getLongList(final PreparedStatement statement, final Object... arguments) throws SQLException {
+        List<Long> list = get(resultSet -> {
             List<Long> integerList = new ArrayList<>();
 
             do {
@@ -287,20 +276,20 @@ public class InfluxConnection implements Connection {
      * @return a list of entities which have the results of the query injected into them
      * @throws SQLException thrown when something exceptional happens
      */
-    public <T> List<T> fetchAllEntity(final Class<T> clazz, final String sql, final Object... arguments)
+    public <T> List<T> getEntityList(final Class<T> clazz, final String sql, final Object... arguments)
             throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchAllEntity(clazz, statement, arguments);
+            return getEntityList(clazz, statement, arguments);
         }
     }
 
-    public <T> List<T> fetchAllEntity(final Class<T> clazz, final PreparedStatement statement,
-                                      final Object... arguments) throws SQLException {
+    public <T> List<T> getEntityList(final Class<T> clazz, final PreparedStatement statement,
+                                     final Object... arguments) throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        try (InfluxResultSet resultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = get(statement)) {
             List<T> entities = new ArrayList<>();
 
             // Iterate over the results
@@ -312,20 +301,21 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
-                                                final Object... arguments) throws SQLException {
+    public <T> Map<String, T> getEntityMap(final Class<T> clazz, final String columnLabel, final String sql,
+                                           final Object... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchAllEntityMap(clazz, columnLabel, statement, arguments);
+            return getEntityMap(clazz, columnLabel, statement, arguments);
         }
     }
 
-    public <T> Map<String, T> fetchAllEntityMap(final Class<T> clazz, final String columnLabel,
-                                                final PreparedStatement statement, final Object... arguments) throws SQLException {
+    public <T> Map<String, T> getEntityMap(final Class<T> clazz, final String columnLabel,
+                                           final PreparedStatement statement, final Object... arguments)
+            throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        try (InfluxResultSet resultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = get(statement)) {
             Map<String, T> entities = new HashMap<>();
 
             // Iterate over the results
@@ -337,24 +327,24 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public List<Map<String, Object>> fetchAllMap(final String sql, final Object ... arguments) throws SQLException {
+    public List<Map<String, Object>> getListMap(final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchAllMap(statement, arguments);
+            return getListMap(statement, arguments);
         }
     }
 
-    public List<Map<String, Object>> fetchAllMap(final PreparedStatement statement, final Object ... arguments)
+    public List<Map<String, Object>> getListMap(final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        try (InfluxResultSet resultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = get(statement)) {
             List<Map<String, Object>> entities = new ArrayList<>();
 
             // Iterate over the results
             while(resultSet.next()) {
-                entities.add(fetchMap(resultSet));
+                entities.add(getMap(resultSet));
             }
 
             // Not technically type safe but necessary to create the illusion of it
@@ -362,19 +352,19 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public <T> T fetchEntity(final T entity, final String sql, final Object ... arguments) throws SQLException {
+    public <T> T getEntity(final T entity, final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchEntity(entity, statement, arguments);
+            return getEntity(entity, statement, arguments);
         }
     }
 
-    public <T> T fetchEntity(final T entity, final PreparedStatement statement, final Object ... arguments)
+    public <T> T getEntity(final T entity, final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        try (InfluxResultSet resultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = get(statement)) {
             int count = 0;
 
             // Iterate over the results
@@ -392,10 +382,10 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public <T> T fetchEntity(final Class<T> clazz, final String sql, final Object ... arguments) throws SQLException {
+    public <T> T getEntity(final Class<T> clazz, final String sql, final Object ... arguments) throws SQLException {
         try {
             T entity = clazz.getDeclaredConstructor().newInstance();
-            return fetchEntity(entity, sql, arguments);
+            return getEntity(entity, sql, arguments);
         } catch (InstantiationException e) {
             throw new SQLException("Cannot instantiate entity: " + clazz.getCanonicalName(), e);
         } catch (IllegalAccessException | InvocationTargetException e) {
@@ -405,19 +395,19 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    public Map<String, Object> fetchMap(final String sql, final Object ... arguments) throws SQLException {
+    public Map<String, Object> getMap(final String sql, final Object ... arguments) throws SQLException {
         try (PreparedStatement statement = prepareStatement(sql)) {
-            return fetchMap(statement, arguments);
+            return getMap(statement, arguments);
         }
     }
 
-    public Map<String, Object> fetchMap(final PreparedStatement statement, final Object ... arguments)
+    public Map<String, Object> getMap(final PreparedStatement statement, final Object ... arguments)
             throws SQLException {
         // Attempt to bind the arguments to the query
         bindArguments(statement, arguments);
 
         // Run the query
-        try (InfluxResultSet resultSet = fetch(statement)) {
+        try (InfluxResultSet resultSet = get(statement)) {
             int count = 0;
 
             Map<String, Object> entity = null;
@@ -428,7 +418,7 @@ public class InfluxConnection implements Connection {
                     throw new SQLException("Encountered a second record where a single record was expected");
                 }
 
-                entity = fetchMap(resultSet);
+                entity = getMap(resultSet);
                 count++;
             }
 
@@ -436,7 +426,7 @@ public class InfluxConnection implements Connection {
         }
     }
 
-    protected Map<String, Object> fetchMap(final InfluxResultSet resultSet) throws SQLException {
+    protected Map<String, Object> getMap(final InfluxResultSet resultSet) throws SQLException {
         Map<String, Object> entity = new HashMap<>();
 
         int columnCount = resultSet.getColumnCount();
@@ -451,294 +441,347 @@ public class InfluxConnection implements Connection {
     }
 
     /**
-     * Fetches a single string from the database
+     * Fetches a single string from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested string or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public String fetchString(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getString(1), sql, args);
+    public String getString(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getString(1), sql, args);
     }
 
     /**
-     * Fetches a single integer from the database
+     * Fetches a single integer from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested integer or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Integer fetchInt(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getInt(1), sql, args);
+    public Integer getInteger(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getInt(1), sql, args);
     }
 
     /**
-     * Fetches a single short from the database
+     * Fetches a single short from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested short or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Short fetchShort(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getShort(1), sql, args);
+    public Short getShort(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getShort(1), sql, args);
     }
 
     /**
-     * Fetches a single byte from the database
+     * Fetches a single byte from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested byte or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Byte fetchByte(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getByte(1), sql, args);
+    public Byte getByte(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getByte(1), sql, args);
     }
 
     /**
-     * Fetches a single timestamp from the database
+     * Fetches a single timestamp from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested timestamp or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Timestamp fetchTimestamp(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getTimestamp(1), sql, args);
+    public Timestamp getTimestamp(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getTimestamp(1), sql, args);
     }
 
     /**
-     * Fetches a single time from the database
+     * Fetches a single time from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested time or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Time fetchTime(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getTime(1), sql, args);
+    public Time getTime(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getTime(1), sql, args);
     }
 
     /**
-     * Fetches a single url from the database
+     * Fetches a single url from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested url or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public URL fetchURL(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getURL(1), sql, args);
+    public URL getUrl(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getURL(1), sql, args);
     }
 
     /**
-     * Fetches an array from the database
+     * Fetches an array from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested array or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Array fetchArray(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getArray(1), sql, args);
+    public Array getArray(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getArray(1), sql, args);
     }
 
     /**
-     * Fetches an ASCII stream from the database
+     * Fetches an ASCII stream from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested ASCII stream or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public InputStream fetchAsciiStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getAsciiStream(1), sql, args);
+    public InputStream getAsciiStream(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getAsciiStream(1), sql, args);
     }
 
     /**
-     * Fetches an binary stream from the database
+     * Fetches a binary stream from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested binary stream or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public InputStream fetchBinaryStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getBinaryStream(1), sql, args);
+    public InputStream getBinaryStream(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getBinaryStream(1), sql, args);
     }
 
     /**
-     * Fetches a blob from the database
+     * Fetches a blob from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested blob stream or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Blob fetchBlob(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getBlob(1), sql, args);
+    public Blob getBlob(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getBlob(1), sql, args);
     }
 
     /**
-     * Fetches a character stream from the database
+     * Fetches a character stream from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested character stream or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Reader fetchCharacterStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getCharacterStream(1), sql, args);
+    public Reader getCharacterStream(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getCharacterStream(1), sql, args);
     }
 
     /**
-     * Fetches an NCharacter stream from the database
+     * Fetches an NCharacter stream from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested NCharacter stream or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Reader fetchNCharacterStream(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getNCharacterStream(1), sql, args);
+    public Reader getNCharacterStream(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getNCharacterStream(1), sql, args);
     }
 
     /**
-     * Fetches a clob from the database
+     * Fetches a clob from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested clob or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Clob fetchClob(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getClob(1), sql, args);
+    public Clob getClob(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getClob(1), sql, args);
     }
 
     /**
-     * Fetches a NClob from the database
+     * Fetches a NClob from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested NClob or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public NClob fetchNClob(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getNClob(1), sql, args);
+    public NClob getNClob(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getNClob(1), sql, args);
     }
 
     /**
-     * Fetches a ref from the database
+     * Fetches a ref from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested ref or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Ref fetchRef(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getRef(1), sql, args);
+    public Ref getRef(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getRef(1), sql, args);
     }
 
     /**
-     * Fetches an NString from the database
+     * Fetches an NString from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested NString or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public String fetchNString(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getNString(1), sql, args);
+    public String getNString(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getNString(1), sql, args);
     }
 
     /**
-     * Fetches an SQLXML from the database
+     * Fetches an SQLXML from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested SQLXML or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public SQLXML fetchSQLXML(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getSQLXML(1), sql, args);
+    public SQLXML getSQLXML(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getSQLXML(1), sql, args);
     }
 
     /**
-     * Fetches an array of bytes from the database
+     * Fetches an array of bytes from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested array of bytes
      * @throws SQLException thrown when something exceptional happens
      */
-    public byte[] fetchBytes(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getBytes(1), sql, args);
+    public byte[] getBytes(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getBytes(1), sql, args);
     }
 
     /**
-     * Fetches a single long from the database
+     * Fetches a single long from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested long or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Long fetchLong(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getLong(1), sql, args);
+    public Long getLong(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getLong(1), sql, args);
     }
 
     /**
-     * Fetches a single float from the database
+     * Fetches a single float from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested float or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Float fetchFloat(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getFloat(1), sql, args);
+    public Float getFloat(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getFloat(1), sql, args);
     }
 
     /**
-     * Fetches a single double from the database
+     * Fetches a single double from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested double or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Double fetchDouble(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getDouble(1), sql, args);
+    public Double getDouble(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getDouble(1), sql, args);
     }
 
     /**
-     * Fetches a single big decimal from the database
+     * Fetches a single big decimal from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested big decimal or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public BigDecimal fetchBigDecimal(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getBigDecimal(1), sql, args);
+    public BigDecimal getBigDecimal(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getBigDecimal(1), sql, args);
     }
 
     /**
-     * Fetches a single date from the database
+     * Fetches a single date from the database.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested date or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Date fetchDate(final String sql, final Object ... args) throws SQLException {
-        return fetch((InfluxResultSetHandler<Date>) resultSet -> resultSet.getDate(1), sql, args);
+    public Date getDate(final String sql, final Object ... args) throws SQLException {
+        return get((InfluxResultSetHandler<Date>) resultSet -> resultSet.getDate(1), sql, args);
     }
 
     /**
      * Fetches a single boolean from the database
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested boolean or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Boolean fetchBoolean(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getBoolean(1), sql, args);
+    public Boolean getBoolean(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getBoolean(1), sql, args);
     }
 
     /**
      * Fetches a single Object from the database. Reflection must be used to infer the actual
      * data type which was returned.
+     *
      * @param sql the sql which should be sent to the database
      * @param args the arguments which should be sent to the database
+     *
      * @return the requested object or null if nothing was returned by the database
      * @throws SQLException thrown when something exceptional happens
      */
-    public Object fetchObject(final String sql, final Object ... args) throws SQLException {
-        return fetch(resultSet -> resultSet.getObject(1), sql, args);
+    public Object getObject(final String sql, final Object ... args) throws SQLException {
+        return get(resultSet -> resultSet.getObject(1), sql, args);
     }
 
     /**
-     * Attempts to bind the specified arguments to the specified statement
+     * Attempts to bind the specified arguments to the specified statement.
+     *
      * @param statement the statement to which the arguments should be bound
      * @param args the arguments which should be bound to the statement
      * @return the statement after the arguments have been bound to it
@@ -761,9 +804,11 @@ public class InfluxConnection implements Connection {
     /**
      * Binds the specified object to the specified statement in the specified position. If a null object is specified,
      * then null will be bound to the statement instead
+     *
      * @param statement the statement to which the object should be bound
      * @param position the position in which the object should be bound
      * @param value the object which should be bound to the statement
+     *
      * @throws SQLException thrown when something exceptional happens
      */
     protected static void bindObject(final PreparedStatement statement, final int position, final Object value)
@@ -787,7 +832,7 @@ public class InfluxConnection implements Connection {
         } else if (value instanceof Timestamp) {
             statement.setTimestamp(position, (Timestamp) value);
         } else if (value instanceof Date) {
-            statement.setDate(position, new java.sql.Date(((Date)value).getTime()));
+            statement.setDate(position, new java.sql.Date(((Date) value).getTime()));
         } else if (value instanceof BigDecimal) {
             statement.setBigDecimal(position, (BigDecimal) value);
         } else if (value instanceof Short) {
@@ -821,7 +866,9 @@ public class InfluxConnection implements Connection {
      * This method converts underscore delimited column names to camel case so that they can
      * be used to locate the appropriate setter method in the target entity. For example, the
      * column name my_column_name would become myColumnName.
+     *
      * @param columnName underscore separated column name
+     *
      * @return camel case equivalent of the underscore separated input value
      * @throws SQLException thrown then something exceptional happens
      */
@@ -861,8 +908,9 @@ public class InfluxConnection implements Connection {
     }
 
     /**
+     * Attempt to begin a transaction.
      *
-     * @throws SQLException throw when something exceptional happens
+     * @throws SQLException Thrown when something goes wrong.
      */
     public void begin() throws SQLException {
         // Throw an error if we attempt to being a transaction without committing or
@@ -911,6 +959,13 @@ public class InfluxConnection implements Connection {
 
         // This only happens if the previous method calls succeed
         transactionActive = false;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public void rollback(final Savepoint savepoint) throws SQLException {
+        this.connection.rollback(savepoint);
     }
 
     /**
@@ -993,28 +1048,6 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-        return this.connection.createStatement();
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
-            throws SQLException {
-        return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-        return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public Map<String, Class<?>> getTypeMap() throws SQLException {
         return this.connection.getTypeMap();
     }
@@ -1057,13 +1090,6 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public void rollback(final Savepoint savepoint) throws SQLException {
-        this.connection.rollback(savepoint);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
     public void releaseSavepoint(Savepoint savepoint) throws SQLException {
         this.connection.releaseSavepoint(savepoint);
     }
@@ -1071,9 +1097,9 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+    public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency)
             throws SQLException {
-        return this.connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
+        return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
     }
 
     /**
@@ -1082,14 +1108,6 @@ public class InfluxConnection implements Connection {
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency,
                                               int resultSetHoldability) throws SQLException {
         return this.connection.prepareStatement(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
-                                         int resultSetHoldability) throws SQLException {
-        return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     /**
@@ -1107,10 +1125,28 @@ public class InfluxConnection implements Connection {
     }
 
     /**
+     * Prepares the specified sql statement for execution and bind the provided arguments to it
+     * @param sql the sql which should be prepared
+     * @param arguments the arguments which should be bound to the statement
+     * @return a reference to the prepared statement after the arguments have been bound to it
+     * @throws SQLException thrown when something exceptional happens
+     */
+    public PreparedStatement prepareStatement(final String sql, final Object... arguments) throws SQLException {
+        return bindArguments(connection.prepareStatement(sql), arguments);
+    }
+
+    /**
      * {@inheritDoc}
      */
     public PreparedStatement prepareStatement(String sql, String[] columnNames) throws SQLException {
         return this.connection.prepareStatement(sql, columnNames);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        return this.connection.prepareStatement(sql);
     }
 
     /**
@@ -1235,6 +1271,13 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
+    public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
+        return this.connection.createStatement();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public Statement createStatement() throws SQLException {
         return this.connection.createStatement();
     }
@@ -1242,8 +1285,9 @@ public class InfluxConnection implements Connection {
     /**
      * {@inheritDoc}
      */
-    public PreparedStatement prepareStatement(String sql) throws SQLException {
-        return this.connection.prepareStatement(sql);
+    public Statement createStatement(int resultSetType, int resultSetConcurrency, int resultSetHoldability)
+            throws SQLException {
+        return this.connection.createStatement(resultSetType, resultSetConcurrency, resultSetHoldability);
     }
 
     /**
@@ -1251,6 +1295,21 @@ public class InfluxConnection implements Connection {
      */
     public CallableStatement prepareCall(String sql) throws SQLException {
         return this.connection.prepareCall(sql);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency,
+                                         int resultSetHoldability) throws SQLException {
+        return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency, resultSetHoldability);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public CallableStatement prepareCall(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
+        return this.connection.prepareCall(sql, resultSetType, resultSetConcurrency);
     }
 
     /**
@@ -1307,12 +1366,22 @@ public class InfluxConnection implements Connection {
             return this;
         }
 
-        public InfluxResultSet fetch() throws SQLException {
+        public InfluxResultSet get() throws SQLException {
             return new InfluxResultSet(preparedStatement.executeQuery());
         }
 
-        public <T> T fetchEntity(Class<T> clazz) throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to bind a single database record to an object of the specified type. If a record is found, the result
+         * set is bound to an object of the specified type and returned. Otherwise, null is returned.
+         *
+         * @param clazz The type of the object which should be bound to the database record.
+         * @param <T> The generic type of the specified class type.
+         *
+         * @return null or an instance of the specified class type.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public <T> T getEntity(Class<T> clazz) throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 if (!resultSet.next()) {
                     return null;
                 }
@@ -1321,48 +1390,91 @@ public class InfluxConnection implements Connection {
         }
 
         // TODO
-        public <T> List<T> fetchList(Class<T> clazz) {
+        public <T> List<T> getList(Class<T> clazz) {
             throw new RuntimeException("IMPLEMENT ME");
         }
 
-        public String fetchString() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a string.
+         *
+         * @return Null or the first column of the first row as a string.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public String getString() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getString(1);
             }
         }
 
-        public Integer toInteger() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as an integer.
+         *
+         * @return Null or the first column of the first row as an integer.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public Integer getInteger() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getInt(1);
             }
         }
 
-        public Short toShort() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a short.
+         *
+         * @return Null or the first column of the first row as a short.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public Short getShort() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getShort(1);
             }
         }
 
-        public Byte fetchByte() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a byte.
+         *
+         * @return Null or the first column of the first row as a byte.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public Byte getByte() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getByte(1);
             }
         }
 
-        public Timestamp fetchTimestamp() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a
+         * timestamp.
+         *
+         * @return Null or the first column of the first row as a timestamp.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public Timestamp getTimestamp() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getTimestamp(1);
             }
         }
 
-        public Time fetchTime() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a time.
+         *
+         * @return Null or the first column of the first row as a time.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public Time getTime() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getTime(1);
             }
         }
 
-        public URL fetchURL() throws SQLException {
-            try (InfluxResultSet resultSet = fetch()) {
+        /**
+         * Attempts to get a single row from the database and returns the first column of that result set as a url.
+         *
+         * @return Null or the first column of the first row as a url.
+         * @throws SQLException Thrown when something goes wrong.
+         */
+        public URL getUrl() throws SQLException {
+            try (InfluxResultSet resultSet = get()) {
                 return resultSet.getURL(1);
             }
         }

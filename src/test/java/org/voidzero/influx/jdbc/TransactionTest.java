@@ -132,7 +132,7 @@ public class TransactionTest extends AbstractUnitTest {
      */
     public static String getPasswordByUsername(final String username,
                                                final InfluxConnection connection) throws SQLException {
-        return connection.fetchString(
+        return connection.getString(
                 "select password from users where username = ?",
                 username
         );
@@ -155,7 +155,7 @@ public class TransactionTest extends AbstractUnitTest {
                 password,
                 username
         );
-        return connection.fetchString(
+        return connection.getString(
                 "select password from users where username = ?",
                 username
         );
