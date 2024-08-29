@@ -720,15 +720,7 @@ public class InfluxDatabaseMetadata implements DatabaseMetaData {
         );
 
         if (!tableResultSet.next()) {
-            String message;
-
-            if (schema != null) {
-                message = "Table " + schema + "." + tableName + " does not exist";
-            } else {
-                message = "Table " + tableName + " does not exist";
-            }
-
-            throw new SQLException(message);
+            return null;
         }
 
         TableMetadata tableMetaData = new TableMetadata(tableResultSet);
