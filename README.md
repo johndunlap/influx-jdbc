@@ -16,9 +16,6 @@ These are the core use cases which are handled by influx-jdbc.
 * Query results are injected into java objects
 * Compatible with existing JDBC applications
 
-# Documentation
-* [Javadoc](https://johndunlap.github.io/influx-jdbc/)
-
 # Examples
 For more working examples, look at the unit tests [here](https://github.com/johndunlap/influx-jdbc/tree/master/src/test/java/org.voidzero.influx.jdbc/test).
 
